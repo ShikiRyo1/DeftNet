@@ -1,0 +1,12 @@
+torch>=2.1
+torchvision>=0.16
+numpy>=1.24
+pillow>=10.0
+scipy>=1.10
+scikit-image>=0.22
+pyyaml>=6.0
+tqdm>=4.66
+matplotlib>=3.7
+
+# Optional, used when available for HD95/ASSD.
+medpy>=0.5; platform_system != "Windows"

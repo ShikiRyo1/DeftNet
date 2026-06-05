@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 253.6 229.1" style="enable-background:new 0 0 253.6 229.1;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	
+		.st1{clip-path:url(#SVGID_2_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	.st2{stroke:#000000;stroke-width:0.8;stroke-linejoin:round;}
+	.st3{font-family:'ArialMT';}
+	.st4{font-size:8.5px;}
+	
+		.st5{clip-path:url(#SVGID_4_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st6{clip-path:url(#SVGID_6_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st7{clip-path:url(#SVGID_8_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st8{clip-path:url(#SVGID_10_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st9{clip-path:url(#SVGID_12_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st10{clip-path:url(#SVGID_14_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st11{clip-path:url(#SVGID_16_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st12{clip-path:url(#SVGID_18_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st13{clip-path:url(#SVGID_20_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st14{clip-path:url(#SVGID_22_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st15{clip-path:url(#SVGID_24_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st16{clip-path:url(#SVGID_26_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	
+		.st17{clip-path:url(#SVGID_28_);fill:none;stroke:#BDBDBD;stroke-width:0.7;stroke-linecap:square;stroke-linejoin:round;stroke-opacity:0.22;}
+	.st18{font-family:'Arial-BoldMT';}
+	.st19{font-size:9px;}
+	.st20{clip-path:url(#SVGID_30_);fill:none;stroke:#D55E00;stroke-linejoin:round;stroke-opacity:0.5;stroke-dasharray:1,1.65;}
+	.st21{fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:square;}
+	.st22{clip-path:url(#SVGID_32_);fill:#D55E00;stroke:#FFD700;stroke-width:2;}
+	.st23{clip-path:url(#SVGID_34_);fill:#9E9E9E;stroke:#666666;stroke-width:0.8;}
+	.st24{clip-path:url(#SVGID_36_);fill:#9E9E9E;stroke:#666666;stroke-width:0.8;}
+	.st25{clip-path:url(#SVGID_38_);fill:#9E9E9E;stroke:#666666;stroke-width:0.8;}
+	.st26{clip-path:url(#SVGID_40_);fill:#9E9E9E;stroke:#666666;stroke-width:0.8;}
+	.st27{fill:#D55E00;}
+	.st28{font-size:7px;}
+	.st29{fill:#333333;}
+	.st30{fill:#666666;}
+	.st31{font-family:'Arial-ItalicMT';}
+	.st32{font-size:6.6px;}
+	.st33{font-size:10px;}
+</style>
+<g id="figure_1">
+	<g id="patch_1">
+		<path class="st0" d="M0,229.1h253.6V0H0V229.1z"/>
+	</g>
+	<g id="axes_1">
+		<g id="patch_2">
+			<path class="st0" d="M56.7,197.1h189.7V30.8H56.7V197.1z"/>
+		</g>
+		<g id="matplotlib.axis_1">
+			<g id="xtick_1">
+				<g id="line2d_1">
+					<g>
+						<defs>
+							<rect id="SVGID_1_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_2_">
+							<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st1" d="M77.5,197.1V30.8"/>
+					</g>
+				</g>
+				<g id="line2d_2">
+					<g>
+						<g>
+							<path id="ma553bbd89e" class="st2" d="M77.5,197.1v3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_1">
+					<text transform="matrix(1 0 0 1 66.1641 210.5771)" class="st3 st4">HSAF</text>
+				</g>
+			</g>
+			<g id="xtick_2">
+				<g id="line2d_3">
+					<g>
+						<defs>
+							<rect id="SVGID_3_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_4_">
+							<use xlink:href="#SVGID_3_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st5" d="M114.5,197.1V30.8"/>
+					</g>
+				</g>
+				<g id="line2d_4">
+					<g>
+						<g>
+							<path id="ma553bbd89e_1_" class="st2" d="M114.5,197.1v3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_2">
+					<text transform="matrix(1 0 0 1 106.4721 210.5771)" class="st3 st4">sum</text>
+				</g>
+			</g>
+			<g id="xtick_3">
+				<g id="line2d_5">
+					<g>
+						<defs>
+							<rect id="SVGID_5_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_6_">
+							<use xlink:href="#SVGID_5_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st6" d="M151.5,197.1V30.8"/>
+					</g>
+				</g>
+				<g id="line2d_6">
+					<g>
+						<g>
+							<path id="ma553bbd89e_2_" class="st2" d="M151.5,197.1v3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_3">
+					<text transform="matrix(1 0 0 1 140.8811 210.5771)" class="st3 st4">mean</text>
+				</g>
+			</g>
+			<g id="xtick_4">
+				<g id="line2d_7">
+					<g>
+						<defs>
+							<rect id="SVGID_7_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_8_">
+							<use xlink:href="#SVGID_7_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st7" d="M188.5,197.1V30.8"/>
+					</g>
+				</g>
+				<g id="line2d_8">
+					<g>
+						<g>
+							<path id="ma553bbd89e_3_" class="st2" d="M188.5,197.1v3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_4">
+					<text transform="matrix(1 0 0 1 175.5612 210.5771)" class="st3 st4">global</text>
+					<text transform="matrix(1 0 0 1 179.8935 220.0953)" class="st3 st4">attn</text>
+				</g>
+			</g>
+			<g id="xtick_5">
+				<g id="line2d_9">
+					<g>
+						<defs>
+							<rect id="SVGID_9_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_10_">
+							<use xlink:href="#SVGID_9_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st8" d="M225.5,197.1V30.8"/>
+					</g>
+				</g>
+				<g id="line2d_10">
+					<g>
+						<g>
+							<path id="ma553bbd89e_4_" class="st2" d="M225.5,197.1v3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_5">
+					<text transform="matrix(1 0 0 1 212.953 210.5771)" class="st3 st4">single</text>
+					<text transform="matrix(1 0 0 1 211.7523 220.0953)" class="st3 st4">expert</text>
+				</g>
+			</g>
+		</g>
+		<g id="matplotlib.axis_2">
+			<g id="ytick_1">
+				<g id="line2d_11">
+					<g>
+						<defs>
+							<rect id="SVGID_11_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_12_">
+							<use xlink:href="#SVGID_11_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st9" d="M56.7,197.1h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_12">
+					<g>
+						<g>
+							<path id="md2bc26e40b" class="st2" d="M56.7,197.1h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_6">
+					<text transform="matrix(1 0 0 1 23.6543 200.3478)" class="st3 st4">0.8000</text>
+				</g>
+			</g>
+			<g id="ytick_2">
+				<g id="line2d_13">
+					<g>
+						<defs>
+							<rect id="SVGID_13_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_14_">
+							<use xlink:href="#SVGID_13_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st10" d="M56.7,176.3h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_14">
+					<g>
+						<g>
+							<path id="md2bc26e40b_1_" class="st2" d="M56.7,176.3h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_7">
+					<text transform="matrix(1 0 0 1 23.6543 179.5578)" class="st3 st4">0.8025</text>
+				</g>
+			</g>
+			<g id="ytick_3">
+				<g id="line2d_15">
+					<g>
+						<defs>
+							<rect id="SVGID_15_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_16_">
+							<use xlink:href="#SVGID_15_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st11" d="M56.7,155.5h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_16">
+					<g>
+						<g>
+							<path id="md2bc26e40b_2_" class="st2" d="M56.7,155.5h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_8">
+					<text transform="matrix(1 0 0 1 23.6543 158.7678)" class="st3 st4">0.8050</text>
+				</g>
+			</g>
+			<g id="ytick_4">
+				<g id="line2d_17">
+					<g>
+						<defs>
+							<rect id="SVGID_17_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_18_">
+							<use xlink:href="#SVGID_17_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st12" d="M56.7,134.7h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_18">
+					<g>
+						<g>
+							<path id="md2bc26e40b_3_" class="st2" d="M56.7,134.7h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_9">
+					<text transform="matrix(1 0 0 1 23.6543 137.9778)" class="st3 st4">0.8075</text>
+				</g>
+			</g>
+			<g id="ytick_5">
+				<g id="line2d_19">
+					<g>
+						<defs>
+							<rect id="SVGID_19_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_20_">
+							<use xlink:href="#SVGID_19_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st13" d="M56.7,114h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_20">
+					<g>
+						<g>
+							<path id="md2bc26e40b_4_" class="st2" d="M56.7,114h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_10">
+					<text transform="matrix(1 0 0 1 23.6543 117.1878)" class="st3 st4">0.8100</text>
+				</g>
+			</g>
+			<g id="ytick_6">
+				<g id="line2d_21">
+					<g>
+						<defs>
+							<rect id="SVGID_21_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_22_">
+							<use xlink:href="#SVGID_21_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st14" d="M56.7,93.2h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_22">
+					<g>
+						<g>
+							<path id="md2bc26e40b_5_" class="st2" d="M56.7,93.2h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_11">
+					<text transform="matrix(1 0 0 1 23.6543 96.3978)" class="st3 st4">0.8125</text>
+				</g>
+			</g>
+			<g id="ytick_7">
+				<g id="line2d_23">
+					<g>
+						<defs>
+							<rect id="SVGID_23_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_24_">
+							<use xlink:href="#SVGID_23_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st15" d="M56.7,72.4h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_24">
+					<g>
+						<g>
+							<path id="md2bc26e40b_6_" class="st2" d="M56.7,72.4h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_12">
+					<text transform="matrix(1 0 0 1 23.6543 75.6078)" class="st3 st4">0.8150</text>
+				</g>
+			</g>
+			<g id="ytick_8">
+				<g id="line2d_25">
+					<g>
+						<defs>
+							<rect id="SVGID_25_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_26_">
+							<use xlink:href="#SVGID_25_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st16" d="M56.7,51.6h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_26">
+					<g>
+						<g>
+							<path id="md2bc26e40b_7_" class="st2" d="M56.7,51.6h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_13">
+					<text transform="matrix(1 0 0 1 23.6543 54.8177)" class="st3 st4">0.8175</text>
+				</g>
+			</g>
+			<g id="ytick_9">
+				<g id="line2d_27">
+					<g>
+						<defs>
+							<rect id="SVGID_27_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+						</defs>
+						<clipPath id="SVGID_28_">
+							<use xlink:href="#SVGID_27_"  style="overflow:visible;"/>
+						</clipPath>
+						<path class="st17" d="M56.7,30.8h189.7"/>
+					</g>
+				</g>
+				<g id="line2d_28">
+					<g>
+						<g>
+							<path id="md2bc26e40b_8_" class="st2" d="M56.7,30.8h-3.5"/>
+						</g>
+					</g>
+				</g>
+				<g id="text_14">
+					<text transform="matrix(1 0 0 1 23.6543 34.0278)" class="st3 st4">0.8200</text>
+				</g>
+			</g>
+			<g id="text_15">
+				<text transform="matrix(6.123234e-17 -1 1 6.123234e-17 14.0386 134.2961)" class="st18 st19">DCA Dice</text>
+			</g>
+		</g>
+		<g id="line2d_29">
+			<g>
+				<defs>
+					<rect id="SVGID_29_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+				</defs>
+				<clipPath id="SVGID_30_">
+					<use xlink:href="#SVGID_29_"  style="overflow:visible;"/>
+				</clipPath>
+				<path class="st20" d="M56.7,59.4h189.7"/>
+			</g>
+		</g>
+		<g id="patch_3">
+			<path class="st21" d="M56.7,197.1V30.8"/>
+		</g>
+		<g id="patch_4">
+			<path class="st21" d="M56.7,197.1h189.7"/>
+		</g>
+		<g id="patch_5">
+			<g>
+				<defs>
+					<rect id="SVGID_31_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+				</defs>
+				<clipPath id="SVGID_32_">
+					<use xlink:href="#SVGID_31_"  style="overflow:visible;"/>
+				</clipPath>
+				<path class="st22" d="M65.3,6849.9h24.4V59.4H65.3V6849.9z"/>
+			</g>
+		</g>
+		<g id="patch_6">
+			<g>
+				<defs>
+					<rect id="SVGID_33_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+				</defs>
+				<clipPath id="SVGID_34_">
+					<use xlink:href="#SVGID_33_"  style="overflow:visible;"/>
+				</clipPath>
+				<path class="st23" d="M102.3,6849.9h24.4V84.9h-24.4V6849.9z"/>
+			</g>
+		</g>
+		<g id="patch_7">
+			<g>
+				<defs>
+					<rect id="SVGID_35_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+				</defs>
+				<clipPath id="SVGID_36_">
+					<use xlink:href="#SVGID_35_"  style="overflow:visible;"/>
+				</clipPath>
+				<path class="st24" d="M139.3,6849.9h24.4V106.2h-24.4V6849.9z"/>
+			</g>
+		</g>
+		<g id="patch_8">
+			<g>
+				<defs>
+					<rect id="SVGID_37_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+				</defs>
+				<clipPath id="SVGID_38_">
+					<use xlink:href="#SVGID_37_"  style="overflow:visible;"/>
+				</clipPath>
+				<path class="st25" d="M176.3,6849.9h24.4V110.3h-24.4V6849.9z"/>
+			</g>
+		</g>
+		<g id="patch_9">
+			<g>
+				<defs>
+					<rect id="SVGID_39_" x="56.7" y="30.8" width="189.7" height="166.3"/>
+				</defs>
+				<clipPath id="SVGID_40_">
+					<use xlink:href="#SVGID_39_"  style="overflow:visible;"/>
+				</clipPath>
+				<path class="st26" d="M213.3,6849.9h24.4V160.4h-24.4V6849.9z"/>
+			</g>
+		</g>
+		<g id="text_16">
+			<text transform="matrix(1 0 0 1 66.7846 51.3184)" class="st27 st18 st28">0.8410</text>
+		</g>
+		<g id="text_17">
+			<text transform="matrix(1 0 0 1 103.796 76.8248)" class="st29 st3 st28">0.8379</text>
+		</g>
+		<g id="text_18">
+			<text transform="matrix(1 0 0 1 140.8073 98.0797)" class="st29 st3 st28">0.8353</text>
+		</g>
+		<g id="text_19">
+			<text transform="matrix(1 0 0 1 177.8186 102.1799)" class="st29 st3 st28">0.8348</text>
+		</g>
+		<g id="text_20">
+			<text transform="matrix(1 0 0 1 214.8299 152.3055)" class="st29 st3 st28">0.8288</text>
+		</g>
+		<g id="text_21">
+			<text transform="matrix(1 0 0 1 56.6523 27.43)" class="st30 st31 st32">same experts, fusion operator swapped</text>
+		</g>
+		<g id="text_22">
+			<text transform="matrix(1 0 0 1 56.6523 14.7985)" class="st18 st33">(c) Fusion-operator ablation</text>
+		</g>
+	</g>
+</g>
+</svg>

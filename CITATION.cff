@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use DeftNet/DEFT-Net in your research, please cite this repository and the associated manuscript."
+title: "DeftNet / DEFT-Net: Depth-Banded Frozen-Expert Fusion for Coronary Vessel Segmentation"
+authors:
+  - family-names: "DeftNet contributors"
+    given-names: ""
+year: 2026
+repository-code: "https://github.com/ShikiRyo1/DeftNet"
+license: MIT

@@ -1,0 +1,31 @@
+{
+  "protocol": "fixed threshold 0.5, no TTA, DCA true-test",
+  "interpretation": "HSAF is adaptive and interpretable but is not claimed to dominate mean fusion on every metric.",
+  "hsaf": {
+    "dice": 0.8196383821430491,
+    "iou": 0.7034194235926243,
+    "sensitivity": 0.8391065900005511,
+    "precision": 0.8161004302439405,
+    "mcc": 0.8166081707424192,
+    "cldice": 0.8443501246954078,
+    "cbdice": 0.806784308223582,
+    "hd95": 40.44174883265432,
+    "assd": 6.86396422115883,
+    "centerline_continuity": 0.8686807679025087,
+    "branch_recall": 0.914487760788981,
+    "small_vessel_recall": 0.7099360731579124
+  },
+  "mean_fusion": {
+    "dice": 0.8216133720394391,
+    "iou": 0.7060259026822759,
+    "sensitivity": 0.8348271966870151,
+    "precision": 0.8240438192637999,
+    "mcc": 0.8186466277980092,
+    "cldice": 0.845352204433128,
+    "hd95": 38.85762235243952,
+    "assd": 6.694808074183869,
+    "centerline_continuity": 0.8621877789191713,
+    "branch_recall": 0.8950483626645461,
+    "small_vessel_recall": 0.7088817402769195
+  }
+}

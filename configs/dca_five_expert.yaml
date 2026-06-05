@@ -1,0 +1,32 @@
+model:
+  in_channels: 1
+  out_channels: 1
+  base_channels: 16
+  norm: in
+  expert_names: [E5, E7, E9, E11, E12]
+  fusion_mode: hsaf
+  use_deep_supervision: false
+  use_feature_adapters: true
+  adapter_dropout: 0.05
+  adapter_residual: true
+  hsaf_gate_dropout: 0.10
+  hsaf_temperature: 1.5
+  freeze_experts: true
+  # Audited manuscript policy: shallow CNN-family, mid mixed, deep Transformer-family.
+  band_policy:
+    e1: [E5, E7, E9]
+    e2: [E5, E7, E9]
+    e3: [E5, E7, E9, E11, E12]
+    e4: [E11, E12]
+    e5: [E11, E12]
+
+train:
+  image_size: 512
+  epochs: 60
+  batch_size: 4
+  lr: 0.0001
+  weight_decay: 0.00001
+  loss:
+    w_bce: 0.45
+    w_dice: 0.45
+    w_cldice: 0.10
