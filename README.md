@@ -41,7 +41,7 @@ git clone https://github.com/ShikiRyo1/DeftNet.git
 cd DeftNet
 python -m venv .venv
 .venv\Scripts\activate  # Windows
-pip install -e .
+pip install -e ".[dev]"
 pytest
 ```
 
@@ -50,7 +50,7 @@ Linux/macOS:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e .
+pip install -e ".[dev]"
 pytest
 ```
 

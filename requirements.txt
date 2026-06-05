@@ -7,6 +7,7 @@ scikit-image>=0.22
 pyyaml>=6.0
 tqdm>=4.66
 matplotlib>=3.7
+pytest>=8.0
 
 # Optional, used when available for HD95/ASSD.
 medpy>=0.5; platform_system != "Windows"
