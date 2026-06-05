@@ -20,13 +20,13 @@ defensible:
 |---:|---|---|---|
 | 0 | Protocol hygiene | split units, expert-test isolation, fixed operating point, no-TTA main protocol | documented |
 | 1 | DCA primary benchmark | fixed 0.5 / no-TTA table, held-out `ttest_*`, `n=134` | complete aggregate table |
-| 2 | Statistical support | paired bootstrap, Wilcoxon/Holm, rank-biserial effect size | pending fixed-protocol per-image dump |
-| 3 | Efficiency/cost | trainable params, total params, GMac, latency/VRAM/TTA cost | partial; latency/VRAM to complete |
+| 2 | Statistical support | paired bootstrap, Wilcoxon/Holm, rank-biserial effect size | scripts included; final per-image dump pending |
+| 3 | Efficiency/cost | trainable params, total params, GMac, latency/VRAM/TTA cost | profiling script included; final hardware run pending |
 | 4 | Mechanism ablations | K sweep, family LOO, depth-band, freezing, fusion | several measured; partial-unfreeze lower priority |
-| 5 | FP mechanism | expert false-positive overlap, disagreement, FP maps | measured overlap; full map gallery pending |
+| 5 | FP mechanism | expert false-positive overlap, disagreement, FP maps | gallery script included; release-approved images pending |
 | 6 | Coronary structure | clDice/cbDice, continuity, branch recall, break count | definitions and partial table ready |
 | 7 | Cross-dataset | auxiliary robustness and precision-rank stability | auxiliary only, not external clinical validation |
-| 8 | Failure modes | low contrast, overlap, tiny branches, modality mismatch | narrative ready, gallery pending |
+| 8 | Failure modes | low contrast, overlap, tiny branches, modality mismatch | narrative ready; release-approved gallery pending |
 
 ## Key Audit Decisions
 
@@ -74,8 +74,12 @@ Both configs are preserved:
 
 ## What Still Needs Completion Before a Paper Submission
 
-- Recompute fixed-protocol per-image metrics for paired statistics.
-- Finish latency/VRAM profiling under identical hardware and batch settings.
+- Run the included fixed-protocol per-image metrics script on the final
+  prediction masks.
+- Run the included paired statistics script on the final all-model per-image
+  table.
+- Run the included latency/VRAM/compute profiling script under identical
+  hardware and batch settings.
 - Decide public release status for weights and any prediction masks.
 - Add the final model checkpoint's exact config hash to the release notes.
 - If possible, verify patient/procedure independence or report the frame-level

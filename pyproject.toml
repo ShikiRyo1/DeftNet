@@ -23,7 +23,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+  "matplotlib>=3.7",
   "pytest>=8.0",
+]
+viz = [
+  "matplotlib>=3.7",
 ]
 
 [tool.setuptools.packages.find]

@@ -1,0 +1,33 @@
+{
+  "release": "v0.1.0",
+  "status": "code-only public release",
+  "repository": "https://github.com/ShikiRyo1/DeftNet",
+  "included_artifacts": [
+    "source_code",
+    "configs",
+    "aggregate_result_tables",
+    "non_sensitive_figures",
+    "reproducibility_scripts",
+    "documentation"
+  ],
+  "withheld_until_final_decision": [
+    "trained_checkpoints",
+    "raw_datasets",
+    "clinical_images",
+    "prediction_masks",
+    "final_split_manifest",
+    "final_paper_citation"
+  ],
+  "canonical_protocol": {
+    "dataset": "DCA",
+    "split": "held-out true-test frames",
+    "n": 134,
+    "threshold": 0.5,
+    "tta": false,
+    "headline_dice": 0.8196
+  },
+  "config_files": {
+    "configs/dca_five_expert.yaml": "e8ab775c27aeb02ea853e0fa2499d324671c0fc0b59d216c61c87ec94ffa2ae2",
+    "configs/legacy_three_deep_experts.yaml": "5624c951d00335b1aac9be1154b36b3d61de579e7e72774e71ec8c56456a2e26"
+  }
+}

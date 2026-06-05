@@ -117,7 +117,21 @@ experiments/                 public result tables and ablation summaries
 docs/                        protocol, data, model card, experiment audit
 assets/                      architecture and non-sensitive result figures
 tests/                       CPU smoke tests
+examples/                    synthetic API demo
 ```
+
+## Reproducibility Utilities
+
+The repository includes utility scripts for paper-grade artifact generation once
+final checkpoints and prediction masks are release-approved:
+
+- `scripts/make_split_manifest.py`: generate checksum manifests for data splits.
+- `scripts/per_image_metrics.py`: compute fixed-threshold per-image metrics.
+- `scripts/paired_stats.py`: run paired bootstrap and Wilcoxon/Holm statistics.
+- `scripts/profile_model.py`: profile parameters, approximate MACs, latency, and VRAM.
+- `scripts/make_gallery.py`: create qualitative TP/FP/FN overlay galleries.
+
+See [`docs/ARTIFACT_ROADMAP.md`](docs/ARTIFACT_ROADMAP.md).
 
 ## Experiment Design
 
