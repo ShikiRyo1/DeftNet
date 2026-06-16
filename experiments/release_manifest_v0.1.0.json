@@ -1,6 +1,6 @@
 {
   "release": "v0.1.0",
   "status": "historical first public code-only release",
-  "repository": "https://github.com/ShikiRyo1/DeftNet",
+  "repository": "https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation",
   "note": "The first public tag is preserved for provenance. Current main-branch experiment summaries are aligned to v0.1.1/v77; use the v0.1.0 Git tag to inspect the original first-release aggregate table."
 }

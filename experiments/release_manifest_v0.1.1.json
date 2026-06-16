@@ -1,7 +1,7 @@
 {
   "release": "v0.1.1",
   "status": "v77-aligned public code and experiment-summary release",
-  "repository": "https://github.com/ShikiRyo1/DeftNet",
+  "repository": "https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation",
   "manuscript_working_version": "v77_CONCLUSION_SCOPE_POLISH_FIGURES_SAFE_2026-06-15",
   "included_artifacts": [
     "source_code",

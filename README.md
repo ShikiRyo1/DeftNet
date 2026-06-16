@@ -62,8 +62,8 @@ HD95 and ASSD are treated as distance-metric guardrails, not as claimed wins.
 ## Installation
 
 ```bash
-git clone https://github.com/ShikiRyo1/DeftNet.git
-cd DeftNet
+git clone https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation.git
+cd DeftNet_coronary-vessel-semantic-segmentation
 python -m venv .venv
 .venv\Scripts\activate
 pip install -e ".[dev]"
@@ -200,7 +200,7 @@ If this repository helps your research, please cite the repository for now:
 @software{deftnet2026,
   title  = {DeftNet / DEFT-Net: Depth-Banded Frozen-Expert Fusion for Coronary Vessel Segmentation},
   year   = {2026},
-  url    = {https://github.com/ShikiRyo1/DeftNet}
+  url    = {https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation}
 }
 ```
 
