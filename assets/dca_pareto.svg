@@ -1265,7 +1265,7 @@ z
     </g>
    </g>
    <g id="text_11">
-    <!-- DEFT-Net: Dice 0.8410, rank 1 on 8/8 DCA metrics -->
+    <!-- DEFT-Net: Dice 0.8264 on the v77 pooled fixed-protocol benchmark; HD95/ASSD are guardrails. -->
     <g style="fill: #d55e00" transform="translate(301.59936 36.473347) scale(0.08 -0.08)">
      <defs>
       <path id="DejaVuSans-Bold-45" d="M 588 4666 

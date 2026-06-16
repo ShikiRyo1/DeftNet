@@ -1,9 +1,9 @@
 # Artifact Roadmap
 
-This repository is currently a public code release for DeftNet / DEFT-Net. It
-contains the cleaned implementation, configs, aggregate public result summaries,
-and scripts for producing paper-grade artifacts when the final data, checkpoint,
-and manuscript decisions are fixed.
+This repository is currently a public code and experiment-summary release for
+DeftNet / DEFT-Net. It contains the cleaned implementation, configs, v77
+aggregate public result summaries, and scripts for producing paper-grade
+artifacts when final data, checkpoint, and manuscript decisions are fixed.
 
 ## Included Now
 
@@ -15,10 +15,12 @@ and manuscript decisions are fixed.
 - model profiling script;
 - qualitative gallery script;
 - synthetic API demo;
-- model card, data policy, reproducibility protocol, citation metadata, and MIT
-  license.
+- v77 pooled benchmark seed-summary CSV;
+- v77 HSAF mechanism-control JSON;
+- model card, data policy, reproducibility protocol, citation metadata, release
+  notes, and MIT license.
 
-## Gated Until Final Paper Decisions
+## Gated Until Final Paper or Release Decisions
 
 - final trained checkpoint, if release is approved;
 - exact split manifest generated from the final data root;

@@ -1,86 +1,104 @@
 # Experiment Design Summary
 
-This file condenses the project-memory audit from the companion Codex thread
-`审计论文实验设计` plus the local planning folder `_paper_planning_v15`.
+This file condenses the companion project-memory audit from the `Deft_Net`
+experiment threads and the local manuscript planning folder. It is aligned to
+manuscript working version **v77, 2026-06-15**.
 
 ## Final Scientific Story
 
-DeftNet/DEFT-Net should not be framed as a universal segmenter or as a model that
-wins because of one magical gate. The strongest story is narrower and more
-defensible:
+DEFT-Net should not be framed as a universal segmenter, a clinical validation
+system, or a method that wins because of one isolated gate. The strongest story
+is narrower and more defensible:
 
-> A frozen bank of heterogeneous vessel-segmentation expert encoders, organized
-> by depth-specific inductive bias, improves coronary DSA vessel segmentation at
-> a fixed operating point while preserving vessel-tree structure and keeping the
-> trainable fusion head small.
+> Frozen heterogeneous expert encoders provide complementary vessel evidence.
+> A depth-banded HSAF router admits those experts at appropriate scales and fuses
+> features before a single shared U-Net decoder makes the final segmentation.
+> Under a fixed 0.5/no-TTA image-level public benchmark, this improves overlap,
+> agreement, precision-risk, and vessel-tree consistency without claiming
+> patient-level clinical validation.
 
-## Main Evidence Chain
+## Current Evidence Chain
 
-| Exp | Purpose | Main Evidence | Status |
+| Step | Purpose | Main evidence | Public repo status |
 |---:|---|---|---|
-| 0 | Protocol hygiene | split units, expert-test isolation, fixed operating point, no-TTA main protocol | documented |
-| 1 | DCA primary benchmark | fixed 0.5 / no-TTA table, held-out `ttest_*`, `n=134` | complete aggregate table |
-| 2 | Statistical support | paired bootstrap, Wilcoxon/Holm, rank-biserial effect size | scripts included; final per-image dump pending |
-| 3 | Efficiency/cost | trainable params, total params, GMac, latency/VRAM/TTA cost | profiling script included; final hardware run pending |
-| 4 | Mechanism ablations | K sweep, family LOO, depth-band, freezing, fusion | several measured; partial-unfreeze lower priority |
-| 5 | FP mechanism | expert false-positive overlap, disagreement, FP maps | gallery script included; release-approved images pending |
-| 6 | Coronary structure | clDice/cbDice, continuity, branch recall, break count | definitions and partial table ready |
-| 7 | Cross-dataset | auxiliary robustness and precision-rank stability | auxiliary only, not external clinical validation |
-| 8 | Failure modes | low contrast, overlap, tiny branches, modality mismatch | narrative ready; release-approved gallery pending |
+| 0 | Protocol lock | fixed threshold 0.5, no TTA, seeds 0/42/44, fixed expert roster and K=5 | documented |
+| 1 | Pooled public benchmark | 15-method leaderboard from DCA/DCAE, XCAD, ARCADE after binary mask harmonization | v77 CSV included |
+| 2 | Statistical support | paired image-level tests, paired bootstrap, Wilcoxon/Holm, source-aware sensitivity | scripts included; per-image dump gated |
+| 3 | Evidence-axis decomposition | Dice/IoU, MCC, precision-risk, clDice/cbDice, beta0 error, fragmentation | narrative and summary included |
+| 4 | Vessel-tree preservation | branch recall, small-vessel recall, fragmentation, topology-error axes | aggregate values included where non-sensitive |
+| 5 | Mechanism ablations | expert-family controls, depth-band admission, freezing, K-sweep | documented; selected summaries included |
+| 6 | HSAF controls | output ensembles, feature mean, random routing, shuffled routing | v77 JSON included |
+| 7 | Efficiency | trainable Phase-II params, total inference footprint, latency, VRAM | current values documented; final hardware profile gated |
+| 8 | Strong controls | nnU-Net and XCA-specific DeepLabV3+ as reproduced controls; FR/SE/AngioNet as protocol-bound related systems | documented without overclaiming |
+| 9 | Auxiliary stress tests | thin-structure robustness outside the primary coronary benchmark | bounded as stress tests, not clinical validation |
 
-## Key Audit Decisions
+## Current Headline Numbers
 
-### 0.8196 vs 0.8410
+The current main table is a pooled public coronary angiography benchmark with
+three-seed mean `+/-` seed SD. The DEFT-Net row is:
 
-The audit locks **0.8196 Dice** as the main DCA claim because it is fixed
-threshold 0.5 + no-TTA. The **0.8410** number is a real project number but comes
-from an enhanced/sensitivity protocol and must not be mixed into the primary
-fixed-protocol table.
+| Model | Dice | IoU | Sens. | Prec. | MCC | clDice | cbDice | HD95 | ASSD |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| DEFT-Net | 0.8264 +/- 0.0056 | 0.7120 +/- 0.0079 | 0.8490 +/- 0.0036 | 0.8186 +/- 0.0065 | 0.8237 +/- 0.0055 | 0.9025 +/- 0.0370 | 0.8086 +/- 0.0010 | 35.8763 +/- 6.1363 | 5.7260 +/- 1.5839 |
 
-### HSAF vs Mean Fusion
+Boundary-distance metrics are reported as guardrails. DeepLabV3+ remains
+slightly better on HD95 and ASSD in the compact table, so those are not claimed
+as DEFT-Net wins.
 
-HSAF should be described as adaptive, interpretable, and theoretically motivated.
-The project should not claim HSAF universally beats mean fusion. In the current
-fixed-protocol head-to-head, mean fusion is marginally ahead on some aggregate
-metrics while HSAF is marginally ahead on several vessel-structure surrogates.
+## Retired Earlier Protocols
 
-### Efficiency
+Earlier project drafts used DCA-only or enhanced/sensitivity settings. Those
+values are no longer the public headline:
 
-Efficiency is useful but must be written transparently:
+- the earlier fixed-threshold DCA-only aggregate is superseded by the v77 pooled
+  public benchmark;
+- enhanced/sensitivity settings must not be mixed into the v77 primary table.
 
-- favorable: small trainable head, lower parameter profile than HRNet/TransUNet;
-- not claimed: fastest model, smallest total compute, universal edge deployment.
+The v77 audit explicitly checked that retired protocol values do not appear in
+the current manuscript text.
 
-### Split Hygiene
+## HSAF vs Simpler Fusion
 
-DCA is treated as a strict held-out frame-level split. Unless patient/procedure
-metadata later proves otherwise, the paper should not claim patient-level or
-procedure-level validation.
+HSAF is described as a feature-level, depth-banded routing mechanism. The public
+repo should not claim that HSAF dominates every simpler fusion rule on every
+metric. The v77 mechanism control instead makes a more precise claim:
 
-### Architecture Naming
+- output-level mask/logit/vote ensembles do not recover the same vessel-tree
+  preservation profile;
+- feature-mean fusion is a meaningful control but remains lower than HSAF in the
+  v77 mechanism table for Dice, MCC, cbDice, branch recall, beta0 error, and
+  fragmentation;
+- random routing and shuffled HSAF weights test whether the routing weights
+  themselves matter.
 
-The local history includes HMES-Net gamma6 and DEFT-Net. The public repository
-uses **DeftNet / DEFT-Net** and explains that DEFT-Net is the manuscript-facing
-name.
+The structured control values are stored in
+`experiments/fusion_hsaf_vs_mean.json`.
 
-### Depth-Band Consistency
+## Efficiency Wording
 
-The audited manuscript narrative uses Transformer-family admission at deep
-levels `e4/e5`. Older notebooks show a legacy `E5,E11,E12` deep admission set.
-Both configs are preserved:
+Efficiency must be written transparently:
 
-- `configs/dca_five_expert.yaml`: audited manuscript default.
-- `configs/legacy_three_deep_experts.yaml`: legacy checkpoint compatibility.
+- favorable: only the Phase-II HSAF plus shared decoder are trainable during
+  fusion training, about 4.48M trainable parameters in the current manuscript
+  table;
+- transparent: frozen expert encoders are still part of inference, about 14.99M
+  total inference parameters in the current manuscript table;
+- not claimed: fastest model, smallest total compute, or universal edge
+  deployment.
 
-## What Still Needs Completion Before a Paper Submission
+## Claim Boundary
 
-- Run the included fixed-protocol per-image metrics script on the final
-  prediction masks.
-- Run the included paired statistics script on the final all-model per-image
-  table.
-- Run the included latency/VRAM/compute profiling script under identical
-  hardware and batch settings.
-- Decide public release status for weights and any prediction masks.
-- Add the final model checkpoint's exact config hash to the release notes.
-- If possible, verify patient/procedure independence or report the frame-level
-  limitation exactly as a limitation.
+The public benchmark is image-level over public datasets. Because
+patient/procedure identifiers are not consistently available across the public
+releases, the paper and this repo do not claim patient-level, procedure-level, or
+external clinical validation.
+
+## What Still Needs Completion Before a Final Paper Artifact
+
+- Decide whether final trained checkpoints can be released.
+- Generate the final split manifest from the exact release-approved data root.
+- Release fixed-protocol per-image metrics only if filenames and metadata pass
+  privacy/license review.
+- Release paired statistical results once the per-image table is approved.
+- Run final latency, VRAM, and compute profiling on the chosen hardware.
+- Add the final manuscript citation, arXiv URL, DOI, or journal citation.

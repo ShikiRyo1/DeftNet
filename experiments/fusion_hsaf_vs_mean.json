@@ -1,31 +1,81 @@
 {
-  "protocol": "fixed threshold 0.5, no TTA, DCA true-test",
-  "interpretation": "HSAF is adaptive and interpretable but is not claimed to dominate mean fusion on every metric.",
-  "hsaf": {
-    "dice": 0.8196383821430491,
-    "iou": 0.7034194235926243,
-    "sensitivity": 0.8391065900005511,
-    "precision": 0.8161004302439405,
-    "mcc": 0.8166081707424192,
-    "cldice": 0.8443501246954078,
-    "cbdice": 0.806784308223582,
-    "hd95": 40.44174883265432,
-    "assd": 6.86396422115883,
-    "centerline_continuity": 0.8686807679025087,
-    "branch_recall": 0.914487760788981,
-    "small_vessel_recall": 0.7099360731579124
+  "protocol": "fixed threshold 0.5, no TTA, pooled public coronary angiography benchmark",
+  "source": "manuscript working version v77, Table 8 HSAF mechanism controls",
+  "interpretation": "HSAF is treated as a feature-level, depth-banded routing mechanism. This control table tests competing explanations; it does not redefine the headline benchmark.",
+  "feature_mean_fusion": {
+    "dice": 0.7985,
+    "mcc": 0.7962,
+    "precision": 0.8368,
+    "cbdice": 0.7635,
+    "branch_recall": 0.8514,
+    "beta0_error": 3.03,
+    "fragmentation": 3.44
   },
-  "mean_fusion": {
-    "dice": 0.8216133720394391,
-    "iou": 0.7060259026822759,
-    "sensitivity": 0.8348271966870151,
-    "precision": 0.8240438192637999,
-    "mcc": 0.8186466277980092,
-    "cldice": 0.845352204433128,
-    "hd95": 38.85762235243952,
-    "assd": 6.694808074183869,
-    "centerline_continuity": 0.8621877789191713,
-    "branch_recall": 0.8950483626645461,
-    "small_vessel_recall": 0.7088817402769195
+  "hsaf": {
+    "dice": 0.8264,
+    "mcc": 0.8237,
+    "precision": 0.8186,
+    "cbdice": 0.8086,
+    "branch_recall": 0.9145,
+    "beta0_error": 2.49,
+    "fragmentation": 2.96
+  },
+  "output_level_controls": {
+    "best_single_expert": {
+      "dice": 0.7673,
+      "mcc": 0.7643,
+      "precision": 0.7336,
+      "cbdice": 0.7237,
+      "branch_recall": 0.9246,
+      "beta0_error": 8.73,
+      "fragmentation": 7.95
+    },
+    "mask_average_ensemble": {
+      "dice": 0.5346,
+      "mcc": 0.5737,
+      "precision": 0.8751,
+      "cbdice": 0.4560,
+      "branch_recall": 0.5130,
+      "beta0_error": 15.07,
+      "fragmentation": 12.94
+    },
+    "logit_average_ensemble": {
+      "dice": 0.4441,
+      "mcc": 0.5091,
+      "precision": 0.9126,
+      "cbdice": 0.4100,
+      "branch_recall": 0.4291,
+      "beta0_error": 7.75,
+      "fragmentation": 7.07
+    },
+    "majority_vote_ensemble": {
+      "dice": 0.5403,
+      "mcc": 0.5769,
+      "precision": 0.8680,
+      "cbdice": 0.4608,
+      "branch_recall": 0.5202,
+      "beta0_error": 19.31,
+      "fragmentation": 16.24
+    }
+  },
+  "routing_controls": {
+    "random_routing": {
+      "dice": 0.7922,
+      "mcc": 0.7894,
+      "precision": 0.8300,
+      "cbdice": 0.7548,
+      "branch_recall": 0.8511,
+      "beta0_error": 4.42,
+      "fragmentation": 4.58
+    },
+    "shuffled_hsaf_weights": {
+      "dice": 0.7935,
+      "mcc": 0.7906,
+      "precision": 0.8305,
+      "cbdice": 0.7593,
+      "branch_recall": 0.8521,
+      "beta0_error": 3.77,
+      "fragmentation": 4.11
+    }
   }
 }

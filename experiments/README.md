@@ -1,14 +1,30 @@
 # Experiments
 
-Committed experiment artifacts are intentionally small and non-sensitive:
+Committed experiment artifacts are intentionally small, structured, and
+non-sensitive.
 
-- `dca_fixed_notta_results.csv`: fixed-threshold/no-TTA DCA aggregate table.
-- `fusion_hsaf_vs_mean.json`: audit result for HSAF vs uniform mean fusion.
-- `release_manifest_v0.1.0.json`: code-release manifest and config checksums.
+## Current Public Tables
 
-Large raw dumps, per-image prediction masks, dataset archives, and checkpoints
-are excluded from git. Release them through GitHub Releases or an external
-artifact store only after license and privacy checks.
+- `pooled_public_fixed_notta_seed_summary_v77.csv`: v77 15-method pooled public
+  coronary angiography benchmark. Values are three-seed mean and seed SD under
+  fixed threshold `0.5` with no test-time augmentation.
+- `fusion_hsaf_vs_mean.json`: v77 HSAF mechanism controls against feature-mean
+  fusion, output-level ensembles, random routing, and shuffled routing.
+- `release_manifest_v0.1.1.json`: current public release manifest and config
+  checksums.
+
+## Historical Release Records
+
+- `release_manifest_v0.1.0.json`: pointer to the first public code-only release.
+  The old aggregate table remains available through the `v0.1.0` Git tag, but it
+  is not the current README headline result.
+
+## Not Committed
+
+Large raw dumps, per-image prediction masks, dataset archives, clinical images,
+and checkpoints are excluded from git. Release them through GitHub Releases,
+Zenodo, Hugging Face, or another artifact store only after license and privacy
+checks.
 
 Use `scripts/per_image_metrics.py`, `scripts/paired_stats.py`, and
 `scripts/profile_model.py` to regenerate final per-image statistics and hardware
