@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -23,7 +24,11 @@ def make_synthetic_vessel(size: int = 128) -> tuple[Image.Image, Image.Image]:
 
 
 def main() -> None:
-    out_dir = Path("examples_output")
+    parser = argparse.ArgumentParser(description="Run an untrained DEFT-Net API smoke demo.")
+    parser.add_argument("--output-dir", default="examples_output")
+    args = parser.parse_args()
+
+    out_dir = Path(args.output_dir)
     out_dir.mkdir(exist_ok=True)
     image, mask = make_synthetic_vessel()
     image.save(out_dir / "synthetic_image.png")

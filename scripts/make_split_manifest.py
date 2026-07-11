@@ -23,7 +23,7 @@ def collect_by_stem(folder: Path) -> dict[str, Path]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Create a checksum split manifest from a DeftNet data_root.")
+    parser = argparse.ArgumentParser(description="Create a checksum split manifest from a DEFT-Net data root.")
     parser.add_argument("--data-root", required=True, help="Root with train_images/train_masks/etc.")
     parser.add_argument("--output", required=True, help="Output CSV manifest path.")
     parser.add_argument("--splits", nargs="+", default=["train", "val", "test", "true_test"])

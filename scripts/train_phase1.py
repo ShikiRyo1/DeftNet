@@ -6,78 +6,73 @@ from pathlib import Path
 
 import torch
 import yaml
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from tqdm import tqdm
 
 from deftnet.data import VesselSegmentationDataset
 from deftnet.losses import CombinedSegLoss
 from deftnet.metrics import evaluate_binary_batch
-from deftnet.models import CANONICAL_EXPERT_NAMES, DeftNet, DeftNetConfig
+from deftnet.models import CANONICAL_EXPERT_NAMES, DeftNetConfig, ExpertSegmentor
 from deftnet.training import git_commit, make_grad_scaler, seed_everything, weighted_metric_mean, write_json
 
 
-def load_config(path: str | Path) -> dict:
+def load_yaml(path: str | Path) -> dict:
     with Path(path).open("r", encoding="utf-8") as handle:
         return yaml.safe_load(handle)
 
 
-def parse_checkpoint_overrides(values: list[str]) -> dict[str, str]:
-    result: dict[str, str] = {}
-    for value in values:
-        if "=" not in value:
-            raise ValueError(f"Expected EXPERT=PATH, received {value!r}")
-        expert, path = value.split("=", 1)
-        expert = expert.strip()
-        if expert not in CANONICAL_EXPERT_NAMES:
-            raise ValueError(f"Unknown expert {expert!r}; expected one of {CANONICAL_EXPERT_NAMES}")
-        result[expert] = path.strip()
-    return result
+def load_assignments(path: str | Path) -> dict[str, int]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    records = payload.get("records", [])
+    assignments = {str(row["sample_id"]): int(row["perspective_fold"]) for row in records}
+    if not assignments:
+        raise ValueError("Perspective manifest contains no records")
+    return assignments
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Phase-II training of HSAF and the shared decoder with frozen Phase-I experts."
-    )
+    parser = argparse.ArgumentParser(description="Phase-I specialization of one DEFT-Net expert.")
     parser.add_argument("--config", default="configs/deftnet_cmig.yaml")
     parser.add_argument("--data-root", required=True)
-    parser.add_argument("--output-dir", default="runs/deftnet_phase2")
-    parser.add_argument(
-        "--expert-checkpoint",
-        action="append",
-        default=[],
-        metavar="EXPERT=PATH",
-        help="Override a Phase-I checkpoint path; repeat for E1 through E5.",
-    )
-    parser.add_argument(
-        "--allow-random-experts",
-        action="store_true",
-        help="Smoke-test only. Never use this flag for a manuscript reproduction.",
-    )
+    parser.add_argument("--perspective-manifest", required=True)
+    parser.add_argument("--expert", required=True, choices=CANONICAL_EXPERT_NAMES)
+    parser.add_argument("--omit-fold", type=int, default=None)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--epochs", type=int, default=None)
-    parser.add_argument("--batch-size", type=int, default=None)
-    parser.add_argument("--lr", type=float, default=None)
-    parser.add_argument("--num-workers", type=int, default=0)
+    parser.add_argument("--output-dir", default="runs/phase1")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument("--num-workers", type=int, default=0)
     args = parser.parse_args()
 
-    cfg_dict = load_config(args.config)
-    train_cfg = cfg_dict.get("train", {})
+    cfg_dict = load_yaml(args.config)
+    train_cfg = cfg_dict.get("phase1", cfg_dict.get("train", {}))
     model_cfg = DeftNetConfig(**cfg_dict.get("model", {}))
-    epochs = args.epochs or int(train_cfg.get("epochs", 60))
-    batch_size = args.batch_size or int(train_cfg.get("batch_size", 4))
-    lr = args.lr or float(train_cfg.get("lr", 1e-4))
-    image_size = int(train_cfg.get("image_size", 512))
-    seed_everything(args.seed)
+    omitted_fold = args.omit_fold if args.omit_fold is not None else CANONICAL_EXPERT_NAMES.index(args.expert)
+    n_folds = int(cfg_dict.get("protocol", {}).get("perspective_folds", 5))
+    if not 0 <= omitted_fold < n_folds:
+        raise ValueError(f"omit-fold must be in [0, {n_folds - 1}]")
 
-    out_dir = Path(args.output_dir) / f"seed{args.seed}"
-    out_dir.mkdir(parents=True, exist_ok=True)
+    seed_everything(args.seed)
     device = torch.device(args.device)
+    image_size = int(train_cfg.get("image_size", cfg_dict.get("train", {}).get("image_size", 512)))
+    batch_size = int(train_cfg.get("batch_size", 4))
+    epochs = int(train_cfg.get("epochs", 60))
     amp_enabled = bool(train_cfg.get("amp", True)) and device.type == "cuda"
 
-    train_ds = VesselSegmentationDataset.from_root(
+    full_train = VesselSegmentationDataset.from_root(
         args.data_root, "train", image_size=image_size, augment=True
     )
+    assignments = load_assignments(args.perspective_manifest)
+    missing = sorted(set(full_train.sample_ids) - set(assignments))
+    if missing:
+        raise ValueError(f"Perspective manifest is missing {len(missing)} training samples")
+    train_indices = [
+        index
+        for index, sample_id in enumerate(full_train.sample_ids)
+        if assignments[sample_id] != omitted_fold
+    ]
+    if not train_indices:
+        raise ValueError("Complementary Phase-I training subset is empty")
+    train_ds = Subset(full_train, train_indices)
     val_ds = VesselSegmentationDataset.from_root(
         args.data_root, "val", image_size=image_size, augment=False
     )
@@ -98,31 +93,11 @@ def main() -> None:
         pin_memory=device.type == "cuda",
     )
 
-    model = DeftNet(model_cfg).to(device)
-    checkpoint_map = {
-        key: value
-        for key, value in cfg_dict.get("expert_checkpoints", {}).items()
-        if value not in (None, "")
-    }
-    checkpoint_map.update(parse_checkpoint_overrides(args.expert_checkpoint))
-    if checkpoint_map:
-        resolved_checkpoints = model.load_expert_checkpoints(
-            checkpoint_map, map_location=device, strict=True
-        )
-    elif args.allow_random_experts:
-        resolved_checkpoints = {}
-        model.freeze_experts()
-    else:
-        raise SystemExit(
-            "Phase-II training requires all five Phase-I checkpoints. Supply "
-            "expert_checkpoints in the YAML or repeat --expert-checkpoint E1=... through E5=...."
-        )
-
+    model = ExpertSegmentor(args.expert, model_cfg).to(device)
     loss_fn = CombinedSegLoss(**train_cfg.get("loss", {}))
-    trainable = [parameter for parameter in model.parameters() if parameter.requires_grad]
     optimizer = torch.optim.AdamW(
-        trainable,
-        lr=lr,
+        model.parameters(),
+        lr=float(train_cfg.get("lr", 1e-4)),
         weight_decay=float(train_cfg.get("weight_decay", 1e-5)),
         betas=(0.9, 0.999),
         eps=1e-8,
@@ -135,17 +110,18 @@ def main() -> None:
     scaler = make_grad_scaler(amp_enabled)
     clip_norm = float(train_cfg.get("gradient_clip_norm", 5.0))
 
+    out_dir = Path(args.output_dir) / f"{args.expert}_omit_fold{omitted_fold}_seed{args.seed}"
+    out_dir.mkdir(parents=True, exist_ok=True)
     run_manifest = {
-        "phase": "II",
+        "phase": "I",
+        "expert": args.expert,
+        "omitted_perspective_fold": omitted_fold,
         "seed": args.seed,
         "train_samples": len(train_ds),
         "validation_samples": len(val_ds),
-        "expert_checkpoints": resolved_checkpoints,
-        "random_expert_smoke_test": bool(args.allow_random_experts and not resolved_checkpoints),
         "config": str(Path(args.config).resolve()),
+        "perspective_manifest": str(Path(args.perspective_manifest).resolve()),
         "git_commit": git_commit(),
-        "threshold": float(cfg_dict.get("protocol", {}).get("threshold", 0.5)),
-        "test_time_augmentation": False,
     }
     write_json(out_dir / "run_manifest.json", run_manifest)
 
@@ -154,7 +130,7 @@ def main() -> None:
     for epoch in range(1, epochs + 1):
         model.train()
         total_loss = 0.0
-        for x, y in tqdm(train_loader, desc=f"Phase II {epoch}/{epochs}", leave=False):
+        for x, y in tqdm(train_loader, desc=f"Phase I {args.expert} {epoch}/{epochs}", leave=False):
             x, y = x.to(device, non_blocking=True), y.to(device, non_blocking=True)
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=amp_enabled):
@@ -162,7 +138,7 @@ def main() -> None:
                 loss, _ = loss_fn(outputs, y)
             scaler.scale(loss).backward()
             scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(trainable, clip_norm)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), clip_norm)
             scaler.step(optimizer)
             scaler.update()
             total_loss += float(loss.detach()) * x.size(0)
@@ -188,13 +164,15 @@ def main() -> None:
             best_dice = metrics["dice"]
             torch.save(
                 {
-                    "phase": "II",
-                    "model": model.state_dict(),
-                    "config": cfg_dict,
+                    "phase": "I",
+                    "expert": args.expert,
+                    "omitted_perspective_fold": omitted_fold,
                     "seed": args.seed,
+                    "model": model.state_dict(),
+                    "encoder_state_dict": model.encoder.state_dict(),
+                    "config": cfg_dict,
                     "epoch": epoch,
                     "metrics": metrics,
-                    "expert_checkpoints": resolved_checkpoints,
                     "git_commit": git_commit(),
                 },
                 out_dir / "best.pth",

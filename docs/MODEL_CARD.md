@@ -1,67 +1,71 @@
-# Model Card
+# Model card
 
 ## Model
 
-DeftNet / DEFT-Net is a binary semantic-segmentation architecture for thin
-vessel structures, with the current research focus on coronary angiography
-vessel-tree segmentation.
+DEFT-Net is a two-stage binary semantic-segmentation architecture for coronary
+X-ray angiography vessel trees. It combines independently specialized frozen
+CNN and Transformer encoders through fixed depth-banded admission and
+pixel-wise HSAF routing before one shared U-Net decoder.
 
-## Intended Use
+## Intended use
 
-- research on vessel segmentation;
-- benchmarking heterogeneous frozen-expert feature fusion;
-- educational reference for reproducible medical-image segmentation releases;
-- extension to other thin-structure segmentation tasks after re-training and
+- research on coronary vessel-tree segmentation;
+- controlled study of fold-perspective expert specialization;
+- controlled study of heterogeneous feature routing before mask prediction;
+- extension to other thin structures after task-specific training and
   validation.
 
-## Not Intended For
+## Not intended for
 
-- clinical diagnosis;
-- autonomous treatment decisions;
-- patient-specific deployment without external validation;
-- use on unrelated modalities without re-training and re-validation;
-- claims of patient-level or procedure-level validation from image-level public
-  benchmark evidence.
+- autonomous diagnosis or treatment;
+- patient-specific deployment without clinical validation;
+- use on new modalities without retraining and validation;
+- claims of patient-, procedure-, site-, or external clinical validation from
+  released-image benchmark evidence alone.
 
 ## Architecture
 
-The model uses a two-stage workflow:
+Phase I trains five full segmentors on complementary four-fifths views of the
+training set. Phase II retains only their encoders:
 
-1. pretrain multiple expert encoder-decoder models;
-2. discard expert decoders;
-3. freeze expert encoders;
-4. learn a depth-banded HSAF feature router plus a single shared decoder.
+- E1: residual semantic CNN;
+- E2: HRNet-lite CNN;
+- E3: dense CNN;
+- E4: pyramid Transformer;
+- E5: Swin-lite Transformer.
 
-The default public config uses:
+E1-E3 are admitted at shallow scales, all experts at the middle scale, and
+E4-E5 at deep scales. HSAF produces one fused tensor per scale. The shared
+decoder uses the deepest fused tensor as its bottleneck input and the remaining
+fused tensors as skip features.
 
-- shallow band: CNN-family experts;
-- mid band: all five experts;
-- deep band: Transformer-family experts.
+## Current public aggregate result
 
-## Current Public Evidence
-
-The v77 public summary reports a 15-method fixed-protocol pooled public coronary
-angiography benchmark. The DEFT-Net row is:
+Three-seed mean +/- seed SD at threshold `0.5`, no TTA:
 
 - Dice: `0.8264 +/- 0.0056`
-- IoU: `0.7120 +/- 0.0079`
+- IoU: `0.7042 +/- 0.0081`
 - sensitivity: `0.8490 +/- 0.0036`
 - precision: `0.8186 +/- 0.0065`
 - MCC: `0.8237 +/- 0.0055`
-- clDice: `0.9025 +/- 0.0370`
+- clDice: `0.9025 +/- 0.0240`
 - cbDice: `0.8086 +/- 0.0010`
-- HD95: `35.8763 +/- 6.1363`
-- ASSD: `5.7260 +/- 1.5839`
+- HD95: `42.46 +/- 1.25 px`
+- ASSD: `7.21 +/- 0.58 px`
 
-Values are three-seed mean `+/-` seed SD under fixed threshold `0.5` and no
-test-time augmentation. HD95 and ASSD are guardrails, not claimed wins.
+HD95 and ASSD are boundary-distance guardrails and are not presented as
+universal wins. Full results and mechanism controls are in `experiments/`.
 
-## Known Limitations
+## Efficiency
 
-- The public release currently has code and aggregate result summaries, not raw
-  data or final release checkpoints.
-- The benchmark is image-level over public datasets unless future metadata
-  verifies patient/procedure independence.
-- HSAF is not claimed to dominate every simpler fusion rule on every metric.
-- Phase-II trainable parameters and total inference footprint must be reported
-  separately because frozen expert encoders remain active at inference.
+The current architecture has 1,862,074 trainable Phase-II parameters and
+12,364,598 total inference parameters. Frozen experts remain active at
+inference, so the trainable and total counts must be reported together. These
+values are measured directly from the v0.2.0 model graph.
+
+## Limitations
+
+- Raw third-party datasets and trained weights are not included.
+- Results are tied to the stated released-image protocol and evaluator.
+- The current evidence supports the tested constrained combination; it does not
+  establish that any component is uniquely optimal for every dataset or metric.

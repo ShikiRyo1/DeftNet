@@ -1,0 +1,14 @@
+metric,direction,same_architecture_full_data_mean,same_architecture_full_data_sd,heterogeneous_full_data_mean,heterogeneous_full_data_sd,deftnet_fold_perspective_mean,deftnet_fold_perspective_sd
+Dice,higher,0.8141,0.0059,0.8198,0.0053,0.8264,0.0056
+IoU,higher,0.6865,0.0084,0.6946,0.0076,0.7042,0.0081
+Sensitivity,higher,0.8227,0.0074,0.8370,0.0046,0.8490,0.0036
+Precision,higher,0.8057,0.0050,0.8079,0.0061,0.8186,0.0065
+MCC,higher,0.8072,0.0062,0.8157,0.0052,0.8237,0.0055
+clDice,higher,0.8464,0.0205,0.8735,0.0200,0.9025,0.0240
+cbDice,higher,0.8004,0.0060,0.8051,0.0042,0.8086,0.0010
+Branch-skeleton recovery,higher,0.8693,0.0083,0.8950,0.0085,0.9145,0.0048
+Betti-0 error,lower,2.80,0.13,2.58,0.08,2.49,0.10
+CC ratio,closer_to_1,3.64,0.22,3.20,0.12,2.96,0.13
+CC deviation,lower,2.64,0.22,2.20,0.12,1.96,0.13
+HD95 (px),lower,43.40,1.60,43.10,1.10,42.46,1.25
+ASSD (px),lower,7.52,0.62,7.45,0.50,7.21,0.58

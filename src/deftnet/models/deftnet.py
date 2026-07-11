@@ -8,7 +8,7 @@ the research idea used in the manuscript:
 3. fuse same-scale encoder features with depth-banded HSAF gates,
 4. feed the fused pyramid into a single trainable decoder.
 
-The default depth-band policy follows the audited manuscript narrative. Legacy
+The default depth-band policy follows the current public method specification. Legacy
 checkpoints can be loaded with a custom `band_policy` if their exact admission
 sets differ.
 """
@@ -16,6 +16,7 @@ sets differ.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, MutableMapping, Sequence, Tuple
 
 import torch
@@ -26,6 +27,11 @@ import torch.nn.functional as F
 LayerName = str
 ExpertName = str
 
+CANONICAL_EXPERT_NAMES: Tuple[str, ...] = ("E1", "E2", "E3", "E4", "E5")
+LEGACY_EXPERT_NAMES: Tuple[str, ...] = ("E5", "E7", "E9", "E11", "E12")
+LEGACY_TO_CANONICAL = dict(zip(LEGACY_EXPERT_NAMES, CANONICAL_EXPERT_NAMES))
+CANONICAL_TO_LEGACY = {value: key for key, value in LEGACY_TO_CANONICAL.items()}
+
 
 @dataclass
 class DeftNetConfig:
@@ -33,14 +39,14 @@ class DeftNetConfig:
     out_channels: int = 1
     base_channels: int = 16
     norm: str = "in"
-    expert_names: Tuple[str, ...] = ("E5", "E7", "E9", "E11", "E12")
+    expert_names: Tuple[str, ...] = CANONICAL_EXPERT_NAMES
     band_policy: Dict[LayerName, Tuple[ExpertName, ...]] = field(
         default_factory=lambda: {
-            "e1": ("E5", "E7", "E9"),
-            "e2": ("E5", "E7", "E9"),
-            "e3": ("E5", "E7", "E9", "E11", "E12"),
-            "e4": ("E11", "E12"),
-            "e5": ("E11", "E12"),
+            "e1": ("E1", "E2", "E3"),
+            "e2": ("E1", "E2", "E3"),
+            "e3": ("E1", "E2", "E3", "E4", "E5"),
+            "e4": ("E4", "E5"),
+            "e5": ("E4", "E5"),
         }
     )
     fusion_mode: str = "hsaf"
@@ -58,6 +64,34 @@ class DeftNetConfig:
     dense_layers: Tuple[int, ...] = (3, 3, 3, 3, 3)
     dense_growth_div: int = 8
     freeze_experts: bool = True
+
+    def __post_init__(self) -> None:
+        names = tuple(self.expert_names)
+        legacy_roster = names == LEGACY_EXPERT_NAMES or (
+            any(name in {"E7", "E9", "E11", "E12"} for name in names)
+            and set(names).issubset(set(LEGACY_EXPERT_NAMES))
+        )
+        if legacy_roster:
+            self.expert_names = tuple(LEGACY_TO_CANONICAL[name] for name in names)
+            self.band_policy = {
+                layer: tuple(LEGACY_TO_CANONICAL.get(name, name) for name in admitted)
+                for layer, admitted in self.band_policy.items()
+            }
+        else:
+            self.expert_names = names
+            self.band_policy = {
+                layer: tuple(admitted) for layer, admitted in self.band_policy.items()
+            }
+
+        unknown = set(self.expert_names) - set(CANONICAL_EXPERT_NAMES)
+        if unknown:
+            raise ValueError(f"Unknown expert names: {sorted(unknown)}")
+        for layer in ("e1", "e2", "e3", "e4", "e5"):
+            if layer not in self.band_policy:
+                raise ValueError(f"band_policy is missing {layer!r}")
+            invalid = set(self.band_policy[layer]) - set(self.expert_names)
+            if invalid:
+                raise ValueError(f"band_policy[{layer!r}] contains unavailable experts: {sorted(invalid)}")
 
 
 def _make_norm(channels: int, norm: str) -> nn.Module:
@@ -112,7 +146,7 @@ class EncoderBase(nn.Module):
 
 
 class EncoderSemantic(EncoderBase):
-    """E5: residual CNN encoder."""
+    """E1: residual semantic CNN encoder."""
 
     def __init__(self, cfg: DeftNetConfig):
         super().__init__(cfg)
@@ -122,10 +156,26 @@ class EncoderSemantic(EncoderBase):
             ResidualBlock(f[0], cfg.norm),
             ResidualBlock(f[0], cfg.norm),
         )
-        self.c2 = nn.Sequential(ConvBlock(f[0], f[1], cfg.norm), ResidualBlock(f[1], cfg.norm))
-        self.c3 = nn.Sequential(ConvBlock(f[1], f[2], cfg.norm), ResidualBlock(f[2], cfg.norm))
-        self.c4 = nn.Sequential(ConvBlock(f[2], f[3], cfg.norm), ResidualBlock(f[3], cfg.norm))
-        self.c5 = nn.Sequential(ConvBlock(f[3], f[4], cfg.norm), ResidualBlock(f[4], cfg.norm))
+        self.c2 = nn.Sequential(
+            ConvBlock(f[0], f[1], cfg.norm),
+            ResidualBlock(f[1], cfg.norm),
+            ResidualBlock(f[1], cfg.norm),
+        )
+        self.c3 = nn.Sequential(
+            ConvBlock(f[1], f[2], cfg.norm),
+            ResidualBlock(f[2], cfg.norm),
+            ResidualBlock(f[2], cfg.norm),
+        )
+        self.c4 = nn.Sequential(
+            ConvBlock(f[2], f[3], cfg.norm),
+            ResidualBlock(f[3], cfg.norm),
+            ResidualBlock(f[3], cfg.norm),
+        )
+        self.c5 = nn.Sequential(
+            ConvBlock(f[3], f[4], cfg.norm),
+            ResidualBlock(f[4], cfg.norm),
+            ResidualBlock(f[4], cfg.norm),
+        )
 
     def forward(self, x: torch.Tensor) -> List[torch.Tensor]:
         e1 = self.c1(x)
@@ -137,7 +187,7 @@ class EncoderSemantic(EncoderBase):
 
 
 class EncoderHRNetLite(EncoderBase):
-    """E7: lightweight HRNet-style multi-resolution refinement."""
+    """E2: lightweight HRNet-style multi-resolution refinement."""
 
     def __init__(self, cfg: DeftNetConfig):
         super().__init__(cfg)
@@ -210,7 +260,7 @@ class DenseStage(nn.Module):
 
 
 class EncoderDenseNet(EncoderBase):
-    """E9: DenseNet-style feature-reuse encoder."""
+    """E3: DenseNet-style feature-reuse encoder."""
 
     def __init__(self, cfg: DeftNetConfig):
         super().__init__(cfg)
@@ -293,8 +343,43 @@ class WindowTransformerStage(nn.Module):
         return self.blocks(x)
 
 
+class PyramidAttentionBlock(nn.Module):
+    def __init__(self, dim: int, heads: int, mlp_ratio: float = 4.0):
+        super().__init__()
+        self.norm1 = nn.LayerNorm(dim)
+        self.attn = nn.MultiheadAttention(dim, num_heads=max(1, heads), batch_first=True)
+        self.norm2 = nn.LayerNorm(dim)
+        hidden = int(dim * mlp_ratio)
+        self.mlp = nn.Sequential(nn.Linear(dim, hidden), nn.GELU(), nn.Linear(hidden, dim))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        batch, channels, height, width = x.shape
+        tokens = x.permute(0, 2, 3, 1).reshape(batch, height * width, channels)
+        query = self.norm1(tokens)
+        attended, _ = self.attn(query, query, query, need_weights=False)
+        tokens = tokens + attended
+        tokens = tokens + self.mlp(self.norm2(tokens))
+        return tokens.reshape(batch, height, width, channels).permute(0, 3, 1, 2).contiguous()
+
+
+class PyramidTransformerStage(nn.Module):
+    def __init__(self, dim: int, depth: int, heads: int, norm: str, mlp_ratio: float = 4.0):
+        super().__init__()
+        self.pre = nn.Sequential(
+            nn.Conv2d(dim, dim, 3, padding=1, groups=dim, bias=False),
+            _make_norm(dim, norm),
+            nn.ReLU(inplace=True),
+        )
+        self.blocks = nn.Sequential(
+            *[PyramidAttentionBlock(dim, heads, mlp_ratio) for _ in range(depth)]
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.blocks(self.pre(x))
+
+
 class EncoderPyramidTransformer(EncoderBase):
-    """E11: pyramid transformer encoder with attention only at deep stages."""
+    """E4: pyramid transformer encoder with attention only at deep stages."""
 
     def __init__(self, cfg: DeftNetConfig):
         super().__init__(cfg)
@@ -308,7 +393,7 @@ class EncoderPyramidTransformer(EncoderBase):
             [
                 nn.Identity()
                 if d <= 0
-                else WindowTransformerStage(f[i], d, cfg.e11_heads[i], cfg.swin_window, 4.0)
+                else PyramidTransformerStage(f[i], d, cfg.e11_heads[i], cfg.norm, 4.0)
                 for i, d in enumerate(cfg.e11_depths)
             ]
         )
@@ -323,7 +408,7 @@ class EncoderPyramidTransformer(EncoderBase):
 
 
 class EncoderSwinLite(EncoderBase):
-    """E12: shifted-window hierarchical encoder."""
+    """E5: shifted-window hierarchical encoder."""
 
     def __init__(self, cfg: DeftNetConfig):
         super().__init__(cfg)
@@ -352,15 +437,15 @@ class EncoderSwinLite(EncoderBase):
 
 
 def build_encoder(name: str, cfg: DeftNetConfig) -> EncoderBase:
-    if name == "E5":
+    if name == "E1":
         return EncoderSemantic(cfg)
-    if name == "E7":
+    if name == "E2":
         return EncoderHRNetLite(cfg)
-    if name == "E9":
+    if name == "E3":
         return EncoderDenseNet(cfg)
-    if name == "E11":
+    if name == "E4":
         return EncoderPyramidTransformer(cfg)
-    if name == "E12":
+    if name == "E5":
         return EncoderSwinLite(cfg)
     raise ValueError(f"Unknown expert name: {name}")
 
@@ -466,6 +551,22 @@ class Decoder(nn.Module):
         return [self.head1(d1), self.head2(d2), self.head3(d3), self.head4(d4)]
 
 
+class ExpertSegmentor(nn.Module):
+    """Phase-I U-Net segmentor used to specialize one expert encoder."""
+
+    def __init__(self, expert_name: str, cfg: DeftNetConfig | None = None):
+        super().__init__()
+        self.cfg = cfg or DeftNetConfig()
+        if expert_name not in CANONICAL_EXPERT_NAMES:
+            raise ValueError(f"Unknown Phase-I expert {expert_name!r}")
+        self.expert_name = expert_name
+        self.encoder = build_encoder(expert_name, self.cfg)
+        self.decoder = Decoder(self.encoder.filters, self.cfg)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor | List[torch.Tensor]:
+        return self.decoder(self.encoder(x))
+
+
 class DeftNet(nn.Module):
     def __init__(self, cfg: DeftNetConfig | None = None):
         super().__init__()
@@ -511,6 +612,42 @@ class DeftNet(nn.Module):
     def total_parameters(self) -> int:
         return sum(p.numel() for p in self.parameters())
 
+    def load_expert_checkpoints(
+        self,
+        checkpoints: Mapping[str, str | Path],
+        *,
+        map_location: str | torch.device = "cpu",
+        strict: bool = True,
+    ) -> Dict[str, str]:
+        """Load Phase-I encoder weights and return the resolved checkpoint paths.
+
+        Accepted files may contain an ``encoder_state_dict``, a Phase-I
+        ``model``/``state_dict`` with ``encoder.`` keys, or an older full
+        DEFT-Net checkpoint with ``encoders.<expert>.`` keys.
+        """
+
+        normalized = _normalize_expert_checkpoint_mapping(checkpoints)
+        missing = [name for name in self.expert_names if name not in normalized]
+        if missing:
+            raise ValueError(f"Missing Phase-I checkpoints for: {', '.join(missing)}")
+
+        resolved: Dict[str, str] = {}
+        for name in self.expert_names:
+            path = Path(normalized[name]).expanduser().resolve()
+            if not path.is_file():
+                raise FileNotFoundError(f"Phase-I checkpoint for {name} not found: {path}")
+            checkpoint = torch.load(path, map_location=map_location)
+            state = _extract_encoder_state(checkpoint, name)
+            incompatible = self.encoders[name].load_state_dict(state, strict=strict)
+            if strict and (incompatible.missing_keys or incompatible.unexpected_keys):
+                raise RuntimeError(
+                    f"Incompatible Phase-I checkpoint for {name}: "
+                    f"missing={incompatible.missing_keys}, unexpected={incompatible.unexpected_keys}"
+                )
+            resolved[name] = str(path)
+        self.freeze_experts()
+        return resolved
+
     def _adapt(self, name: str, level: int, feat: torch.Tensor) -> torch.Tensor:
         if not self.use_adapters:
             return feat
@@ -543,7 +680,79 @@ def build_deftnet(**kwargs) -> DeftNet:
     return DeftNet(cfg)
 
 
+def _normalize_expert_checkpoint_mapping(
+    checkpoints: Mapping[str, str | Path],
+) -> Dict[str, str | Path]:
+    keys = tuple(checkpoints)
+    legacy = any(key in {"E7", "E9", "E11", "E12"} for key in keys)
+    if legacy:
+        return {LEGACY_TO_CANONICAL.get(key, key): value for key, value in checkpoints.items()}
+    return dict(checkpoints)
+
+
+def _unwrap_state_dict(checkpoint: object) -> Mapping[str, torch.Tensor]:
+    if not isinstance(checkpoint, Mapping):
+        raise TypeError("Checkpoint must contain a mapping of parameter tensors")
+    for key in ("encoder_state_dict", "model", "state_dict"):
+        value = checkpoint.get(key)
+        if isinstance(value, Mapping):
+            return value
+    return checkpoint
+
+
+def _extract_encoder_state(checkpoint: object, expert_name: str) -> Dict[str, torch.Tensor]:
+    state = _unwrap_state_dict(checkpoint)
+    legacy_name = CANONICAL_TO_LEGACY[expert_name]
+    prefixes = (
+        f"encoders.{expert_name}.",
+        f"encoders.{legacy_name}.",
+        "encoder.",
+        "module.encoder.",
+    )
+    for prefix in prefixes:
+        selected = {
+            key[len(prefix) :]: value
+            for key, value in state.items()
+            if isinstance(key, str) and key.startswith(prefix) and torch.is_tensor(value)
+        }
+        if selected:
+            return selected
+    direct = {
+        key.removeprefix("module."): value
+        for key, value in state.items()
+        if isinstance(key, str) and torch.is_tensor(value)
+    }
+    if not direct:
+        raise ValueError(f"No encoder tensors found for {expert_name}")
+    return direct
+
+
+def remap_legacy_state_dict(state: Mapping[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+    """Translate v0.1.x expert identifiers without colliding on legacy E5."""
+
+    legacy_detected = any(
+        isinstance(key, str) and ("encoders.E7." in key or "adapters.E7_" in key)
+        for key in state
+    )
+    if not legacy_detected:
+        return dict(state)
+
+    remapped: Dict[str, torch.Tensor] = {}
+    for key, value in state.items():
+        new_key = key
+        for index, legacy_name in enumerate(LEGACY_EXPERT_NAMES):
+            token = f"__DEFT_LEGACY_{index}__"
+            new_key = new_key.replace(f"encoders.{legacy_name}.", f"encoders.{token}.")
+            new_key = new_key.replace(f"adapters.{legacy_name}_", f"adapters.{token}_")
+        for index, canonical_name in enumerate(CANONICAL_EXPERT_NAMES):
+            token = f"__DEFT_LEGACY_{index}__"
+            new_key = new_key.replace(f"encoders.{token}.", f"encoders.{canonical_name}.")
+            new_key = new_key.replace(f"adapters.{token}_", f"adapters.{canonical_name}_")
+        remapped[new_key] = value
+    return remapped
+
+
 def load_checkpoint(model: nn.Module, checkpoint_path: str, strict: bool = True, map_location: str | torch.device = "cpu"):
     checkpoint = torch.load(checkpoint_path, map_location=map_location)
     state = checkpoint.get("state_dict", checkpoint.get("model", checkpoint))
-    return model.load_state_dict(state, strict=strict)
+    return model.load_state_dict(remap_legacy_state_dict(state), strict=strict)

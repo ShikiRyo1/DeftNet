@@ -1,63 +1,78 @@
-# DeftNet / DEFT-Net
+# DEFT-Net
 
-**Depth-banded feature-level routing of frozen expert encoders for coronary
-angiography vessel-tree segmentation.**
+**Depth-banded, pixel-wise routing of fold-perspective frozen heterogeneous
+experts for coronary X-ray angiography vessel-tree segmentation.**
 
-This repository is the public code and experiment-summary package for the
-DEFT-Net research project. DEFT-Net trains heterogeneous vessel-segmentation
-experts, discards their decoders, freezes the expert encoders, and learns a
-depth-banded HSAF fusion module before a single U-Net decoder predicts the final
-binary vessel mask.
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB.svg)](https://www.python.org/)
+[![PyTorch 2.1+](https://img.shields.io/badge/PyTorch-2.1%2B-EE4C2C.svg)](https://pytorch.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2E7D32.svg)](LICENSE)
+[![Release](https://img.shields.io/badge/release-v0.2.0-146C94.svg)](docs/RELEASE_NOTES_v0.2.0.md)
+[![CI](https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation/actions/workflows/ci.yml/badge.svg)](https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation/actions/workflows/ci.yml)
 
-![DeftNet architecture](assets/architecture.png)
+This repository contains the reference implementation and public aggregate
+artifacts for the current DEFT-Net CMIG manuscript. The method is trained in
+two phases. Five heterogeneous expert segmentors first specialize on five
+complementary four-fifths views of the training set. Their decoders are then
+removed, the encoders are frozen, and HSAF routes admitted same-scale features
+into one shared U-Net decoder. The final prediction is produced once; DEFT-Net
+is not an output ensemble.
 
-## Release Status
+![DEFT-Net Phase-II architecture](assets/deftnet_phase2_architecture.png)
 
-Current public package: **v0.1.1 candidate, aligned to manuscript working version
-v77, 2026-06-15**.
+## What changed in v0.2.0
 
-The repository contains code, configs, non-sensitive figures, v77 aggregate
-experiment summaries, and reproducibility utilities. It does not redistribute
-third-party datasets, clinical images, trained checkpoints, prediction masks, or
-unpublished manuscript source files.
+- aligned public expert identifiers with the paper: `E1`-`E5`;
+- added deterministic fold-perspective manifests and Phase-I training;
+- made Phase-II training require the five Phase-I encoder checkpoints;
+- aligned both phases to `0.50 BCE + 0.50 Dice`, 60 epochs, AdamW, cosine
+  scheduling, mixed precision, and gradient clipping;
+- added legacy v0.1.x config/checkpoint migration;
+- expanded fixed-threshold structural evaluation and updated the current
+  public aggregate tables;
+- replaced the previous architecture graphic and deprecated terminology.
 
-## Highlights
+## Method at a glance
 
-- **Frozen heterogeneous experts**: CNN-style, HRNet-style, DenseNet-style, SSM,
-  and Transformer-style encoders are trained as separate specialists, then
-  frozen for fusion-stage training.
-- **Depth-banded HSAF routing**: shallow scales admit local-detail experts,
-  the middle scale admits all experts, and deep scales admit Transformer-family
-  experts.
-- **Single decoder, not output ensembling**: expert decoder outputs are not
-  averaged, voted, or ensembled at inference; fusion happens at the feature
-  level before one shared decoder.
-- **Fixed operating point**: the headline benchmark uses threshold `0.5`, no
-  test-time augmentation, and the same pooled public coronary angiography
-  benchmark.
-- **Job-ready release shape**: installable PyTorch package, training/evaluation
-  scripts, configs, result tables, model card, data policy, release notes, and
-  smoke tests.
+| Expert | Public description | Family | Phase-I view |
+|---|---|---|---|
+| E1 | residual semantic CNN | CNN | all training samples except fold 1 |
+| E2 | HRNet-lite CNN | CNN | all training samples except fold 2 |
+| E3 | dense CNN | CNN | all training samples except fold 3 |
+| E4 | pyramid Transformer | Transformer | all training samples except fold 4 |
+| E5 | Swin-lite Transformer | Transformer | all training samples except fold 5 |
 
-## Main v77 Result
+The fixed depth-banded admission policy is:
 
-The current manuscript-facing result is a **15-method fixed-protocol pooled
-public coronary angiography benchmark** assembled from DCA/DCAE, XCAD, and
-ARCADE after binary vessel-mask harmonization. Values below are three-seed mean
-`+/-` seed SD for seeds `0`, `42`, and `44`.
+| Feature scale | Admitted experts | Role |
+|---|---|---|
+| `e1`, `e2` | E1, E2, E3 | high-resolution local evidence |
+| `e3` | E1, E2, E3, E4, E5 | cross-family competition |
+| `e4`, `e5` | E4, E5 | wider contextual evidence |
 
-| Rank | Model | Dice | IoU | Sens. | Prec. | MCC | clDice | cbDice | HD95 | ASSD |
-|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | **DEFT-Net** | **0.8264 +/- 0.0056** | **0.7120 +/- 0.0079** | **0.8490 +/- 0.0036** | **0.8186 +/- 0.0065** | **0.8237 +/- 0.0055** | **0.9025 +/- 0.0370** | **0.8086 +/- 0.0010** | 35.8763 +/- 6.1363 | 5.7260 +/- 1.5839 |
-| 2 | U-Mamba | 0.8103 +/- 0.0100 | 0.6906 +/- 0.0143 | 0.8186 +/- 0.0105 | 0.8147 +/- 0.0090 | 0.8066 +/- 0.0099 | 0.8999 +/- 0.0422 | 0.7908 +/- 0.0064 | 47.4616 +/- 4.9820 | 8.4582 +/- 1.3173 |
-| 3 | SegFormer | 0.8084 +/- 0.0075 | 0.6861 +/- 0.0104 | 0.8272 +/- 0.0103 | 0.8026 +/- 0.0039 | 0.8045 +/- 0.0074 | 0.8963 +/- 0.0444 | 0.7917 +/- 0.0032 | 45.2430 +/- 6.5060 | 7.7948 +/- 1.5004 |
-| 4 | UNet++ | 0.8070 +/- 0.0040 | 0.6857 +/- 0.0066 | 0.8296 +/- 0.0078 | 0.8006 +/- 0.0077 | 0.8037 +/- 0.0030 | 0.8781 +/- 0.0207 | 0.7895 +/- 0.0046 | 38.7974 +/- 11.3550 | 5.9801 +/- 2.2673 |
-| 5 | U-Net | 0.8060 +/- 0.0028 | 0.6844 +/- 0.0035 | 0.8289 +/- 0.0065 | 0.7997 +/- 0.0070 | 0.8028 +/- 0.0025 | 0.8853 +/- 0.0368 | 0.7910 +/- 0.0029 | 38.2145 +/- 11.2777 | 6.0332 +/- 2.3886 |
-| 6 | DeepLabV3+ | 0.8030 +/- 0.0041 | 0.6795 +/- 0.0062 | 0.8252 +/- 0.0065 | 0.7970 +/- 0.0079 | 0.7996 +/- 0.0036 | 0.8871 +/- 0.0175 | 0.7900 +/- 0.0032 | **35.3534 +/- 8.0954** | **5.4631 +/- 1.9527** |
+At each scale, all five adapted feature maps condition the HSAF router. Logits
+of experts outside the fixed admission set are masked before the temperature-
+scaled softmax (`tau=1.5`), so only admitted experts contribute to the fused
+tensor. The shared decoder consumes `e5` as its bottleneck input and uses the
+fused `e4`-`e1` tensors as skip features.
 
-The full 15-method, nine-metric table is committed as
-[`experiments/pooled_public_fixed_notta_seed_summary_v77.csv`](experiments/pooled_public_fixed_notta_seed_summary_v77.csv).
-HD95 and ASSD are treated as distance-metric guardrails, not as claimed wins.
+## Current fixed-protocol benchmark
+
+The current public summary uses 1,760 released coronary angiography images,
+split into 1,408 training, 176 validation, and 176 held-out test images. Results
+use seeds `0`, `42`, and `44`, a fixed threshold of `0.5`, and no test-time
+augmentation.
+
+| Model | Dice | IoU | Sens. | Prec. | MCC | clDice | cbDice | HD95 (px) | ASSD (px) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| **DEFT-Net** | **0.8264 +/- 0.0056** | **0.7042 +/- 0.0081** | **0.8490 +/- 0.0036** | **0.8186 +/- 0.0065** | **0.8237 +/- 0.0055** | **0.9025 +/- 0.0240** | **0.8086 +/- 0.0010** | 42.46 +/- 1.25 | 7.21 +/- 0.58 |
+| U-Mamba | 0.8103 +/- 0.0100 | 0.6906 +/- 0.0143 | 0.8186 +/- 0.0105 | 0.8147 +/- 0.0090 | 0.8066 +/- 0.0099 | 0.8999 +/- 0.0422 | 0.7908 +/- 0.0064 | 47.4616 +/- 4.9820 | 8.4582 +/- 1.3173 |
+| SegFormer | 0.8084 +/- 0.0075 | 0.6861 +/- 0.0104 | 0.8272 +/- 0.0103 | 0.8026 +/- 0.0039 | 0.8045 +/- 0.0074 | 0.8963 +/- 0.0444 | 0.7917 +/- 0.0032 | 45.2430 +/- 6.5060 | 7.7948 +/- 1.5004 |
+
+The full 15-method summary is in
+[`experiments/pooled_public_fixed_notta_seed_summary_v277.csv`](experiments/pooled_public_fixed_notta_seed_summary_v277.csv).
+HD95 and ASSD are boundary-distance guardrails, not claimed as universal wins.
+Mechanism and full-data controls are reported separately so that benchmark and
+ablation evidence are not conflated.
 
 ## Installation
 
@@ -65,146 +80,135 @@ HD95 and ASSD are treated as distance-metric guardrails, not as claimed wins.
 git clone https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation.git
 cd DeftNet_coronary-vessel-semantic-segmentation
 python -m venv .venv
-.venv\Scripts\activate
+```
+
+Windows:
+
+```powershell
+.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
-pytest
+pytest -q
 ```
 
 Linux/macOS:
 
 ```bash
-python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-pytest
+pytest -q
 ```
 
-## Dataset Layout
-
-The scripts expect binary masks in a simple folder layout:
+## Dataset layout
 
 ```text
 data_root/
-  train_images/
-  train_masks/
-  val_images/
-  val_masks/
-  test_images/
-  test_masks/
-  true_test_images/      # optional held-out final split
-  true_test_masks/
+  train_images/    train_masks/
+  val_images/      val_masks/
+  test_images/     test_masks/
 ```
 
-Third-party datasets and clinical images are not included in this repository.
-See [`docs/DATA.md`](docs/DATA.md) for the release and citation policy.
+Images are read as single-channel inputs and resized to `512 x 512`; masks use
+nearest-neighbour resizing. Dataset files are not redistributed. See
+[`docs/DATA.md`](docs/DATA.md) for scope, harmonization, and release boundaries.
 
-## Training
+## Reproduce the two-stage training protocol
+
+### 1. Create the complementary-view manifest
 
 ```bash
-python scripts/train.py \
-  --config configs/dca_five_expert.yaml \
+python scripts/make_perspective_folds.py \
   --data-root path/to/data_root \
-  --output-dir runs/deftnet_dca
+  --output manifests/perspective_folds_seed2026.json \
+  --folds 5 --seed 2026
 ```
 
-The default config freezes all expert encoders during the fusion stage. If you
-need to reproduce an older checkpoint that used a three-expert deep band, use
-`configs/legacy_three_deep_experts.yaml`.
+The assignment is deterministic and near-balanced. Expert `Ei` omits fold `i`
+during Phase I; every held-out fold remains part of the global training split,
+not the final validation or test set.
 
-## Evaluation
+### 2. Train the five Phase-I expert segmentors
+
+```bash
+python scripts/train_phase1.py --data-root path/to/data_root \
+  --perspective-manifest manifests/perspective_folds_seed2026.json \
+  --expert E1 --omit-fold 0 --seed 42 --output-dir runs/phase1
+```
+
+Repeat for `E2`-`E5` with omitted folds `1`-`4`. The best validation checkpoint
+contains both the full Phase-I segmentor and an `encoder_state_dict` for Phase
+II.
+
+### 3. Train HSAF and the shared decoder
+
+```bash
+python scripts/train.py --data-root path/to/data_root --seed 42 \
+  --expert-checkpoint E1=runs/phase1/E1_omit_fold0_seed42/best.pth \
+  --expert-checkpoint E2=runs/phase1/E2_omit_fold1_seed42/best.pth \
+  --expert-checkpoint E3=runs/phase1/E3_omit_fold2_seed42/best.pth \
+  --expert-checkpoint E4=runs/phase1/E4_omit_fold3_seed42/best.pth \
+  --expert-checkpoint E5=runs/phase1/E5_omit_fold4_seed42/best.pth
+```
+
+Run the same pipeline for seeds `0`, `42`, and `44`. Phase-II training refuses
+to proceed when an expert checkpoint is missing. `--allow-random-experts`
+exists only for synthetic smoke tests and must not be used for paper results.
+
+## Evaluation and inference
 
 ```bash
 python scripts/evaluate.py \
-  --config configs/dca_five_expert.yaml \
-  --checkpoint runs/deftnet_dca/best.pth \
-  --data-root path/to/data_root \
-  --split true_test \
-  --threshold 0.5
-```
+  --checkpoint runs/deftnet_phase2/seed42/best.pth \
+  --data-root path/to/data_root --split test --threshold 0.5
 
-## Inference
-
-```bash
 python scripts/infer.py \
-  --config configs/dca_five_expert.yaml \
-  --checkpoint runs/deftnet_dca/best.pth \
-  --image example.png \
-  --output mask.png
+  --checkpoint runs/deftnet_phase2/seed42/best.pth \
+  --image example.png --output mask.png --threshold 0.5
 ```
 
-## Repository Map
+Additional utilities:
 
-```text
-src/deftnet/                 installable PyTorch package
-scripts/                     train, evaluate, infer, statistics, profiling
-configs/                     audited and legacy architecture configs
-experiments/                 public result tables and ablation summaries
-docs/                        protocol, data, model card, release notes
-assets/                      architecture and non-sensitive result figures
-tests/                       CPU smoke tests
-examples/                    synthetic API demo
-```
+- `scripts/per_image_metrics.py`: fixed-threshold per-image overlap, centerline,
+  branch, component-count, and boundary metrics;
+- `scripts/paired_stats.py`: paired bootstrap, Wilcoxon, rank-biserial effect
+  size, and explicitly scoped Holm correction;
+- `scripts/make_split_manifest.py`: image/mask checksums and split provenance;
+- `scripts/profile_model.py`: parameter, MAC, latency, and VRAM reporting;
+- `scripts/make_gallery.py`: deterministic TP/FP/FN qualitative panels.
 
-## Reproducibility Utilities
+## Reproducibility boundary
 
-The repository includes utility scripts for paper-grade artifact generation once
-final checkpoints and prediction masks are release-approved:
+- The public package contains code, configs, aggregate tables, and
+  non-sensitive figures; it does not redistribute third-party angiograms,
+  masks, private metadata, trained weights, or per-image exports.
+- The primary evidence is a released-image benchmark. It is not described as
+  patient-, procedure-, site-, or external clinical validation where the public
+  releases do not provide the corresponding identifiers.
+- Frozen experts remain active at inference. The paper-aligned plain U-Net
+  implementation in this release has 1,862,074 Phase-II trainable parameters
+  and 12,364,598 total inference parameters; both quantities should be reported
+  together. The counts are covered by a regression test.
+- Legacy v0.1.x expert identifiers are migrated automatically, but new configs
+  and checkpoints should use `E1`-`E5`.
 
-- `scripts/make_split_manifest.py`: generate checksum manifests for data splits.
-- `scripts/per_image_metrics.py`: compute fixed-threshold per-image metrics.
-- `scripts/paired_stats.py`: run paired bootstrap and Wilcoxon/Holm statistics.
-- `scripts/profile_model.py`: profile parameters, approximate MACs, latency, and
-  VRAM.
-- `scripts/make_gallery.py`: create qualitative TP/FP/FN overlay galleries.
-
-See [`docs/ARTIFACT_ROADMAP.md`](docs/ARTIFACT_ROADMAP.md).
-
-## Experiment Design
-
-The current evidence chain is:
-
-1. lock the fixed protocol and operating point;
-2. report the pooled public coronary benchmark;
-3. support the aggregate table with paired statistics and source-aware checks;
-4. decompose the result into overlap, precision-risk, agreement, and vessel-tree
-   axes;
-5. test mechanism ablations for expert diversity, freezing, and depth-banding;
-6. test HSAF against output-level ensemble and feature-mean controls;
-7. report efficiency with both trainable and total inference footprint;
-8. compare against strong task-specific controls without overclaiming
-   unreproduced systems;
-9. keep auxiliary cross-domain thin-structure tests bounded as stress tests.
-
-See [`docs/EXPERIMENT_DESIGN_SUMMARY.md`](docs/EXPERIMENT_DESIGN_SUMMARY.md),
-[`docs/PAPER_V77_EXPERIMENT_UPDATE.md`](docs/PAPER_V77_EXPERIMENT_UPDATE.md),
-and [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md).
-
-## Important Limitations
-
-- The current public package contains code, configs, aggregate result tables, and
-  non-sensitive figures. Dataset redistribution and trained checkpoints require
-  separate release decisions.
-- The benchmark is image-level over public datasets. It is not claimed as
-  patient-level, procedure-level, or external clinical validation because those
-  identifiers are not consistently available across the public releases.
-- DEFT-Net is parameter-efficient in the Phase-II trainable-head sense; frozen
-  expert encoders are still part of the total inference footprint.
-- HSAF is presented as a feature-level routing mechanism, not as proof that it
-  dominates every simpler fusion rule on every metric.
+See [`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md),
+[`docs/MODEL_CARD.md`](docs/MODEL_CARD.md), and
+[`docs/EXPERIMENT_DESIGN_SUMMARY.md`](docs/EXPERIMENT_DESIGN_SUMMARY.md).
 
 ## Citation
 
-If this repository helps your research, please cite the repository for now:
+Until a citable manuscript record is available, cite the software release:
 
 ```bibtex
-@software{deftnet2026,
-  title  = {DeftNet / DEFT-Net: Depth-Banded Frozen-Expert Fusion for Coronary Vessel Segmentation},
+@software{wu2026deftnet,
+  author = {Yuhui Wu},
+  title  = {DEFT-Net: Depth-Banded Routing of Fold-Perspective Frozen Heterogeneous Experts},
   year   = {2026},
+  version = {0.2.0},
   url    = {https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation}
 }
 ```
 
 ## License
 
-MIT. Dataset-specific licenses and terms still apply to any external data used
+MIT. Dataset-specific licenses and terms remain in force for external data used
 with this code.

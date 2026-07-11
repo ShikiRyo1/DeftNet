@@ -9,12 +9,12 @@ from PIL import Image
 from torchvision import transforms as T
 from torchvision.transforms.functional import InterpolationMode
 
-from deftnet.models import DeftNet, DeftNetConfig
+from deftnet.models import DeftNet, DeftNetConfig, load_checkpoint
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run binary vessel segmentation on one image.")
-    parser.add_argument("--config", default="configs/dca_five_expert.yaml")
+    parser.add_argument("--config", default="configs/deftnet_cmig.yaml")
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--image", required=True)
     parser.add_argument("--output", required=True)
@@ -26,8 +26,7 @@ def main() -> None:
         cfg_dict = yaml.safe_load(f)
     image_size = int(cfg_dict.get("train", {}).get("image_size", 512))
     model = DeftNet(DeftNetConfig(**cfg_dict.get("model", {}))).to(args.device)
-    ckpt = torch.load(args.checkpoint, map_location=args.device)
-    model.load_state_dict(ckpt.get("model", ckpt.get("state_dict", ckpt)), strict=False)
+    load_checkpoint(model, args.checkpoint, strict=True, map_location=args.device)
     model.eval()
 
     tf = T.Compose([T.Resize((image_size, image_size), interpolation=InterpolationMode.BILINEAR), T.ToTensor()])

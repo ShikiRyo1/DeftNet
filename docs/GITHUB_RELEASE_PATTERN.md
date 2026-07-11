@@ -27,16 +27,18 @@ The shared pattern is:
 - release notes and citation metadata;
 - clear policy for checkpoints, pretrained models, datasets, and large artifacts.
 
-## How DeftNet Implements This Pattern
+## How DEFT-Net Implements This Pattern
 
 - `src/deftnet/`: importable PyTorch package.
-- `configs/`: audited and legacy YAML configs.
-- `scripts/train.py`, `scripts/evaluate.py`, `scripts/infer.py`: command-line
-  entry points.
+- `configs/`: current and legacy YAML configs.
+- `scripts/train_phase1.py`, `scripts/train.py`, `scripts/evaluate.py`, and
+  `scripts/infer.py`: two-stage training and evaluation entry points.
 - `scripts/per_image_metrics.py`, `scripts/paired_stats.py`,
   `scripts/profile_model.py`: reproducibility utilities.
-- `experiments/pooled_public_fixed_notta_seed_summary_v77.csv`: current v77
-  public result table.
+- `experiments/pooled_public_fixed_notta_seed_summary_v277.csv`: current public
+  aggregate result table.
+- `experiments/mechanism_controls_v277.csv` and
+  `experiments/full_data_controls_v277.csv`: mechanism evidence.
 - `experiments/fusion_hsaf_vs_mean.json`: mechanism-control summary.
 - `docs/`: data, model-card, reproducibility, artifact-roadmap, release notes,
   and experiment-design summaries.
@@ -45,7 +47,7 @@ The shared pattern is:
 
 ## Medical-Image Specific Guardrails
 
-Unlike a generic computer-vision demo repo, DeftNet deliberately withholds:
+Unlike a generic computer-vision demo repo, DEFT-Net deliberately withholds:
 
 - raw angiography images;
 - third-party dataset archives;

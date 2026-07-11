@@ -10,12 +10,13 @@ from torch.utils.data import DataLoader
 
 from deftnet.data import VesselSegmentationDataset
 from deftnet.metrics import evaluate_binary_batch
-from deftnet.models import DeftNet, DeftNetConfig
+from deftnet.models import DeftNet, DeftNetConfig, load_checkpoint
+from deftnet.training import weighted_metric_mean
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate DeftNet/DEFT-Net at a fixed operating point.")
-    parser.add_argument("--config", default="configs/dca_five_expert.yaml")
+    parser = argparse.ArgumentParser(description="Evaluate DEFT-Net at a fixed operating point.")
+    parser.add_argument("--config", default="configs/deftnet_cmig.yaml")
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--data-root", required=True)
     parser.add_argument("--split", default="test", choices=["val", "test", "true_test"])
@@ -28,8 +29,7 @@ def main() -> None:
     with open(args.config, "r", encoding="utf-8") as f:
         cfg_dict = yaml.safe_load(f)
     model = DeftNet(DeftNetConfig(**cfg_dict.get("model", {}))).to(args.device)
-    ckpt = torch.load(args.checkpoint, map_location=args.device)
-    model.load_state_dict(ckpt.get("model", ckpt.get("state_dict", ckpt)), strict=False)
+    load_checkpoint(model, args.checkpoint, strict=True, map_location=args.device)
     model.eval()
 
     image_size = int(cfg_dict.get("train", {}).get("image_size", 512))
@@ -42,8 +42,10 @@ def main() -> None:
             x, y = x.to(args.device), y.to(args.device)
             outputs = model(x)
             logits = outputs[0] if isinstance(outputs, (list, tuple)) else outputs
-            all_metrics.append(evaluate_binary_batch(logits, y, threshold=args.threshold))
-    summary = {k: sum(m[k] for m in all_metrics) / len(all_metrics) for k in all_metrics[0]}
+            all_metrics.append((int(x.shape[0]), evaluate_binary_batch(logits, y, threshold=args.threshold)))
+    if not all_metrics:
+        raise RuntimeError(f"No samples were found for split {args.split!r}.")
+    summary = weighted_metric_mean(all_metrics)
     print(json.dumps(summary, indent=2))
     if args.output:
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)

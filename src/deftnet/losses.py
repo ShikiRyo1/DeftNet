@@ -60,7 +60,13 @@ class SoftClDiceLoss2D(nn.Module):
 
 
 class CombinedSegLoss(nn.Module):
-    def __init__(self, w_bce: float = 0.45, w_dice: float = 0.45, w_cldice: float = 0.10):
+    """BCE-Dice objective used in both manuscript training phases.
+
+    ``w_cldice`` is retained only to load legacy configs. The current protocol
+    fixes it to zero; clDice and cbDice are evaluation-only endpoints.
+    """
+
+    def __init__(self, w_bce: float = 0.50, w_dice: float = 0.50, w_cldice: float = 0.0):
         super().__init__()
         self.w_bce = float(w_bce)
         self.w_dice = float(w_dice)
@@ -82,6 +88,6 @@ class CombinedSegLoss(nn.Module):
             aux = 0.0
         bce = self.bce(main, target)
         dsc = dice_loss(main, target)
-        cld = self.cldice(main, target)
+        cld = self.cldice(main, target) if self.w_cldice > 0 else main.new_zeros(())
         total = self.w_bce * bce + self.w_dice * dsc + self.w_cldice * cld + aux
         return total, {"bce": float(bce.detach()), "dice": float(dsc.detach()), "cldice": float(cld.detach())}

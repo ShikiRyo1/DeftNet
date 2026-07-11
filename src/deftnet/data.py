@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable, Tuple
-
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
+from torchvision.transforms import functional as TF
 from torchvision.transforms.functional import InterpolationMode
 
 
@@ -84,12 +83,36 @@ class VesselSegmentationDataset(Dataset):
     def __len__(self) -> int:
         return len(self.images)
 
+    @property
+    def sample_ids(self) -> list[str]:
+        return [path.stem for path in self.images]
+
     def __getitem__(self, index: int):
         image = Image.open(self.images[index]).convert("L")
         mask = Image.open(self.masks[index]).convert("L")
         x = self.image_tf(image)
         y = (self.mask_tf(mask) > 0.5).float()
         if self.augment:
+            angle = float(torch.empty(()).uniform_(-10.0, 10.0))
+            scale = float(torch.empty(()).uniform_(0.85, 1.15))
+            x = TF.affine(
+                x,
+                angle=angle,
+                translate=[0, 0],
+                scale=scale,
+                shear=[0.0, 0.0],
+                interpolation=InterpolationMode.BILINEAR,
+                fill=0.0,
+            )
+            y = TF.affine(
+                y,
+                angle=angle,
+                translate=[0, 0],
+                scale=scale,
+                shear=[0.0, 0.0],
+                interpolation=InterpolationMode.NEAREST,
+                fill=0.0,
+            )
             if torch.rand(()) < 0.5:
                 x = torch.flip(x, dims=[-1])
                 y = torch.flip(y, dims=[-1])

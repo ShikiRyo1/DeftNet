@@ -12,7 +12,7 @@ import numpy as np
 from scipy import stats
 
 
-DEFAULT_METRICS = ["dice", "iou", "sen", "pre", "cldice", "hd95", "assd"]
+DEFAULT_METRICS = ["dice", "iou", "sen", "pre", "mcc", "cldice", "cbdice", "hd95", "assd"]
 
 
 def read_rows(paths: list[str]) -> list[dict[str, str]]:
@@ -62,12 +62,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run paired statistics from long-form per-image metrics CSV files.")
     parser.add_argument("--input", nargs="+", required=True, help="One or more CSVs with model/sample_id metric columns.")
     parser.add_argument("--output", required=True)
-    parser.add_argument("--reference", default="DeftNet")
+    parser.add_argument("--reference", default="DEFT-Net")
     parser.add_argument("--metrics", nargs="+", default=DEFAULT_METRICS)
     parser.add_argument("--id-column", default="sample_id")
     parser.add_argument("--model-column", default="model")
     parser.add_argument("--bootstrap", type=int, default=10000)
     parser.add_argument("--seed", type=int, default=2026)
+    parser.add_argument(
+        "--holm-family",
+        choices=["per-metric", "all-tests"],
+        default="per-metric",
+        help="Define the multiplicity family explicitly instead of silently pooling unrelated endpoints.",
+    )
     args = parser.parse_args()
 
     table: dict[str, dict[str, dict[str, float]]] = defaultdict(dict)
@@ -80,7 +86,13 @@ def main() -> None:
         raise SystemExit(f"Reference model not found: {args.reference}")
 
     baselines = sorted(m for m in table if m != args.reference)
-    results: dict[str, object] = {"reference": args.reference, "bootstrap": args.bootstrap, "comparisons": {}}
+    results: dict[str, object] = {
+        "reference": args.reference,
+        "bootstrap": args.bootstrap,
+        "pairing_unit": args.id_column,
+        "holm_family": args.holm_family,
+        "comparisons": {},
+    }
     p_values: list[tuple[str, str, float]] = []
 
     for baseline in baselines:
@@ -117,10 +129,15 @@ def main() -> None:
             }
         results["comparisons"][baseline] = baseline_result
 
-    adjusted = holm_adjust(p_values)
+    if args.holm_family == "all-tests":
+        adjusted = holm_adjust(p_values)
+    else:
+        adjusted = {}
+        for metric in args.metrics:
+            adjusted.update(holm_adjust([row for row in p_values if row[0] == metric]))
     for baseline, baseline_result in results["comparisons"].items():
         for metric, metric_result in baseline_result["metrics"].items():
-            metric_result["p_holm_all_tests"] = adjusted.get((metric, baseline), float("nan"))
+            metric_result["p_holm"] = adjusted.get((metric, baseline), float("nan"))
 
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)

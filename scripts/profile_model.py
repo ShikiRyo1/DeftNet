@@ -48,8 +48,8 @@ def estimate_macs(model: nn.Module, sample: torch.Tensor) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Profile DeftNet parameters, approximate MACs, latency, and CUDA VRAM.")
-    parser.add_argument("--config", default="configs/dca_five_expert.yaml")
+    parser = argparse.ArgumentParser(description="Profile DEFT-Net parameters, approximate MACs, latency, and CUDA VRAM.")
+    parser.add_argument("--config", default="configs/deftnet_cmig.yaml")
     parser.add_argument("--output", default=None)
     parser.add_argument("--image-size", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=1)

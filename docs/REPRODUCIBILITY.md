@@ -1,99 +1,83 @@
-# Reproducibility Protocol
+# Reproducibility protocol
 
-This protocol is aligned to manuscript working version **v77, 2026-06-15** and
-to the public code release shape in this repository.
+This document defines the public v0.2.0 reference protocol.
 
-## Main Operating Point
+## Fixed operating point
 
-The primary public benchmark uses:
-
-- input size: `512 x 512`;
+- released-image split: `1408 / 176 / 176`;
+- input: one grayscale `512 x 512` image;
+- seeds: `0`, `42`, and `44`;
 - threshold: `0.5`;
 - test-time augmentation: disabled;
-- post-processing: identical binary-mask handling across methods;
-- seeds: `0`, `42`, and `44`;
-- benchmark: pooled public coronary angiography data from DCA/DCAE, XCAD, and
-  ARCADE after binary vessel-mask harmonization;
-- metric code: identical implementation for every model.
+- Phase-I and Phase-II epochs: `60`;
+- batch size: `4`;
+- optimizer: AdamW, learning rate `1e-4`, weight decay `1e-5`;
+- scheduler: cosine annealing, `T_max=60`, `eta_min=1e-6`;
+- training: mixed precision when CUDA is available and gradient clipping at
+  norm `5.0`;
+- objective: `0.50 BCE + 0.50 Dice`.
 
-The public CSV reports three-seed mean `+/-` seed SD:
-`experiments/pooled_public_fixed_notta_seed_summary_v77.csv`.
+clDice, cbDice, component, centerline, and boundary-distance metrics are
+evaluation readouts, not optimized losses in the current protocol.
 
-## What Is Not a Main Result
+## Phase I: fold-perspective specialization
 
-The following may be useful as sensitivity analysis but should not be used as
-the headline claim:
+Create one deterministic five-fold assignment within the training split. E1
+through E5 omit folds 1 through 5, respectively, and each expert is trained as
+a complete encoder-decoder segmentor on the complementary four-fifths view.
+The validation split selects the best checkpoint. Save the complete run
+manifest and the encoder state dictionary.
 
-- per-image oracle thresholds chosen against test ground truth;
-- per-metric threshold sweeps on test labels;
-- TTA-only comparisons when baselines do not receive the same TTA budget;
-- older DCA-only or enhanced-setting numbers from intermediate drafts;
-- validation-calibrated mechanism controls used only to test competing
-  explanations.
+## Phase II: frozen bank, HSAF, shared decoder
 
-## Metric Set
+Load all five Phase-I encoder checkpoints, remove the Phase-I decoders, and
+freeze the encoders. Train only feature adapters, HSAF routers, and the shared
+decoder. The training script fails when a Phase-I checkpoint is missing; this
+prevents the earlier failure mode in which randomly initialized experts could
+be frozen silently.
 
-Primary binary segmentation metrics:
+## Evaluation
 
-- Dice
-- IoU
-- sensitivity
-- precision
-- specificity
-- MCC
+Aggregate each run separately, then report the mean and sample standard
+deviation across seeds. Use one evaluator and one threshold for every model.
+The public metric script provides:
 
-Vessel-structure and guardrail metrics:
+- Dice, IoU, sensitivity, precision, specificity, and MCC;
+- clDice and hard cbDice;
+- branch-skeleton recovery, thin-structure recall, centerline continuity, and
+  centerline break count;
+- Betti-0 error, component-count ratio, and distance from the ideal ratio;
+- HD95 and ASSD.
 
-- clDice
-- cbDice
-- centerline continuity
-- branch recall
-- small-vessel recall
-- beta0 error
-- fragmentation
-- break count
-- HD95
-- ASSD
+For paired comparisons, `scripts/paired_stats.py` reports a paired bootstrap
+confidence interval, two-sided Wilcoxon signed-rank test, and matched-pairs
+rank-biserial effect size. The Holm family is explicit and defaults to one
+family per endpoint across baseline comparisons. The pairing unit is the CSV
+identifier supplied with `--id-column`; use patient or sequence identifiers
+instead of image identifiers whenever those grouping variables are available.
 
-HD95 and ASSD are reported as distance-metric guardrails in the v77 narrative.
-They are not claimed as DEFT-Net wins when a competing baseline is lower.
+## Required run artifacts
 
-## Recommended Statistical Tests
+Each release checkpoint should be accompanied by:
 
-For a paper submission or a fully reproducible artifact release, compute
-per-image paired metrics under the fixed operating point and report:
+- exact YAML configuration and git commit;
+- seed and best validation epoch;
+- split and perspective-fold manifests;
+- paths or hashes of the five Phase-I checkpoints;
+- epoch history and final fixed-threshold per-image metrics;
+- software and hardware profile.
 
-- paired bootstrap confidence intervals, `B=10000`;
-- two-sided Wilcoxon signed-rank tests;
-- Holm correction across baseline comparisons;
-- matched-pairs rank-biserial effect size;
-- source-aware sensitivity over reconstructed source strata;
-- explicit note that image-level bootstrap is used unless patient/procedure IDs
-  are available for cluster-aware aggregation.
+## Legacy compatibility
 
-The repository includes `scripts/per_image_metrics.py` and
-`scripts/paired_stats.py` for this workflow. Final per-image CSVs are gated until
-filename, metadata, license, and privacy checks are complete.
+v0.1.x configurations used expert identifiers `E5/E7/E9/E11/E12`. The v0.2.0
+loader migrates the complete legacy roster and matching checkpoint keys to
+`E1/E2/E3/E4/E5`. New artifacts should use only the canonical identifiers.
 
-## Checkpoint Compatibility
-
-The cleaned package supports configurable depth-band policies. When releasing a
-checkpoint, include:
-
-- exact config YAML;
-- git commit hash;
-- training data split manifest;
-- metric script version;
-- whether expert encoders were frozen, partially unfrozen, or fully trainable;
-- hardware profile for latency, VRAM, and approximate MACs.
-
-## Minimal Local Verification
-
-Without datasets or checkpoints, users can still verify the package surface:
+## Local verification without research data
 
 ```bash
 pip install -e ".[dev]"
-pytest
+pytest -q
 python -m compileall src scripts tests examples
 python examples/synthetic_demo.py --output-dir examples_output
 ```

@@ -1,0 +1,52 @@
+{
+  "release": "v0.2.0",
+  "status": "current CMIG manuscript-aligned code and aggregate evidence release",
+  "repository": "https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation",
+  "manuscript_alignment": "v277",
+  "protocol": {
+    "benchmark": "pooled released-image coronary XCA benchmark",
+    "released_images": 1760,
+    "split": {"train": 1408, "validation": 176, "test": 176},
+    "image_size": [512, 512],
+    "threshold": 0.5,
+    "test_time_augmentation": false,
+    "seeds": [0, 42, 44],
+    "phase1_epochs": 60,
+    "phase2_epochs": 60,
+    "objective": "0.50 BCE + 0.50 Dice"
+  },
+  "headline_result": {
+    "dice_mean": 0.8264,
+    "dice_seed_sd": 0.0056,
+    "iou_mean": 0.7042,
+    "iou_seed_sd": 0.0081,
+    "mcc_mean": 0.8237,
+    "mcc_seed_sd": 0.0055,
+    "cbdice_mean": 0.8086,
+    "cbdice_seed_sd": 0.0010
+  },
+  "included_artifacts": [
+    "phase1_and_phase2_training_code",
+    "current_model_and_legacy_checkpoint_migration",
+    "fixed_threshold_evaluation_code",
+    "per_image_structure_metric_export",
+    "paired_statistical_analysis",
+    "current_aggregate_result_tables",
+    "architecture_figure",
+    "reproducibility_documentation"
+  ],
+  "not_included": [
+    "raw_or_redistributed_dataset_images",
+    "trained_model_checkpoints",
+    "source_identifiers_or_clinical_metadata",
+    "per_image_predictions_from_the_manuscript_runs"
+  ],
+  "claim_boundary": "Released-image, fixed-protocol evidence; not patient-, procedure-, site-, or clinical-external validation.",
+  "sha256": {
+    "configs/deftnet_cmig.yaml": "338e202354eb33991fa82b036627a566deb7d7f0851a0e2e1016c98900932c1c",
+    "configs/dca_five_expert.yaml": "c1f3f2e06749f8a7531d0c1223124d15ccc79ab580206db17261c010cd05373a",
+    "experiments/pooled_public_fixed_notta_seed_summary_v277.csv": "f27ea367e3ed134843835b52916d8ea1b21d91f6a81b9a12c13086ad65c124fe",
+    "experiments/mechanism_controls_v277.csv": "0ec892eeeed17b1591de7609d667fecb108a9a92b9fbc4f343f2b1cb1a0920d3",
+    "experiments/full_data_controls_v277.csv": "73ff5ffba3c438fe3f71cdf8cf32de2fd8f89d57cdf0d3ed191505f779f8aa5a"
+  }
+}

@@ -1,31 +1,29 @@
-# Experiments
+# Experiment artifacts
 
-Committed experiment artifacts are intentionally small, structured, and
-non-sensitive.
+Committed artifacts are structured, aggregate, and non-sensitive.
 
-## Current Public Tables
+## Current tables
 
-- `pooled_public_fixed_notta_seed_summary_v77.csv`: v77 15-method pooled public
-  coronary angiography benchmark. Values are three-seed mean and seed SD under
-  fixed threshold `0.5` with no test-time augmentation.
-- `fusion_hsaf_vs_mean.json`: v77 HSAF mechanism controls against feature-mean
-  fusion, output-level ensembles, random routing, and shuffled routing.
-- `release_manifest_v0.1.1.json`: current public release manifest and config
-  checksums.
+- `pooled_public_fixed_notta_seed_summary_v277.csv`: current 15-method
+  released-image benchmark, reported as three-seed mean and seed SD;
+- `mechanism_controls_v277.csv`: fusion, routing, admission, output-level, and
+  expert controls with explicit evidence level;
+- `full_data_controls_v277.csv`: same-architecture full-data, heterogeneous
+  full-data, and fold-perspective heterogeneous expert-bank comparison;
+- `fusion_hsaf_vs_mean.json`: compact machine-readable view of selected HSAF
+  controls.
+- `release_manifest_v0.2.0.json`: protocol summary, artifact boundary, and
+  SHA-256 digests for the current public release files.
 
-## Historical Release Records
+Older `v77` and `v0.1.x` files are retained only as release history and are not
+the current public source.
 
-- `release_manifest_v0.1.0.json`: pointer to the first public code-only release.
-  The old aggregate table remains available through the `v0.1.0` Git tag, but it
-  is not the current README headline result.
+## Not committed
 
-## Not Committed
-
-Large raw dumps, per-image prediction masks, dataset archives, clinical images,
-and checkpoints are excluded from git. Release them through GitHub Releases,
-Zenodo, Hugging Face, or another artifact store only after license and privacy
-checks.
+Raw datasets, clinical images, prediction masks, restricted filenames,
+checkpoints, and large per-image dumps are excluded. Release them through a
+separately reviewed artifact store only after source-license and privacy checks.
 
 Use `scripts/per_image_metrics.py`, `scripts/paired_stats.py`, and
-`scripts/profile_model.py` to regenerate final per-image statistics and hardware
-profiles after the final checkpoint and prediction masks are release-approved.
+`scripts/profile_model.py` to regenerate approved evaluation and hardware
+artifacts.

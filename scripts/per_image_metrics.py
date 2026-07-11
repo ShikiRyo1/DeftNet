@@ -9,7 +9,21 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from deftnet.metrics import cldice_score, hd95_assd, metrics_from_confusion
+from deftnet.metrics import (
+    betti0_error,
+    betti1_error,
+    branch_skeleton_recovery,
+    cbdice_score,
+    centerline_break_count,
+    centerline_continuity,
+    cldice_score,
+    component_count_deviation,
+    component_count_ratio,
+    hd95_assd,
+    metrics_from_confusion,
+    skeleton_false_negative_rate,
+    thin_structure_recall,
+)
 
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
@@ -47,7 +61,7 @@ def main() -> None:
     parser.add_argument("--pred-dir", required=True, help="Directory of predicted masks or probability maps.")
     parser.add_argument("--mask-dir", required=True, help="Directory of binary ground-truth masks.")
     parser.add_argument("--output", required=True, help="Output per-image CSV.")
-    parser.add_argument("--model", default="DeftNet")
+    parser.add_argument("--model", default="DEFT-Net")
     parser.add_argument("--split", default="test")
     parser.add_argument("--threshold", type=float, default=0.5)
     args = parser.parse_args()
@@ -59,7 +73,27 @@ def main() -> None:
         raise SystemExit("No matching prediction/mask filenames by stem.")
 
     rows: list[dict[str, object]] = []
-    metric_names = ["dice", "iou", "sen", "pre", "spec", "mcc", "cldice", "hd95", "assd"]
+    metric_names = [
+        "dice",
+        "iou",
+        "sen",
+        "pre",
+        "spec",
+        "mcc",
+        "cldice",
+        "cbdice",
+        "hd95",
+        "assd",
+        "branch_recovery",
+        "thin_recall",
+        "continuity",
+        "break_count",
+        "betti0_error",
+        "betti1_error",
+        "cc_ratio",
+        "cc_deviation",
+        "skel_fnr",
+    ]
 
     for sample_id in sample_ids:
         pred_prob = load01(preds[sample_id])
@@ -68,9 +102,19 @@ def main() -> None:
         c = confusion_np(pred, target)
         metrics = metrics_from_confusion(**c)
         metrics["cldice"] = cldice_score(pred.astype(np.float32), target.astype(np.float32))
+        metrics["cbdice"] = cbdice_score(pred, target)
         hd95, assd = hd95_assd(pred.astype(np.float32), target.astype(np.float32))
         metrics["hd95"] = hd95
         metrics["assd"] = assd
+        metrics["branch_recovery"] = branch_skeleton_recovery(pred, target)
+        metrics["thin_recall"] = thin_structure_recall(pred, target)
+        metrics["continuity"] = centerline_continuity(pred, target)
+        metrics["break_count"] = centerline_break_count(pred, target)
+        metrics["betti0_error"] = betti0_error(pred, target)
+        metrics["betti1_error"] = betti1_error(pred, target)
+        metrics["cc_ratio"] = component_count_ratio(pred, target)
+        metrics["cc_deviation"] = component_count_deviation(pred, target)
+        metrics["skel_fnr"] = skeleton_false_negative_rate(pred, target)
         rows.append(
             {
                 "model": args.model,
