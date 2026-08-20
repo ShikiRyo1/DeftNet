@@ -1,0 +1,85 @@
+{
+  "release": "v0.3.0",
+  "status": "final-manuscript project sync with stable aggregate artifact names",
+  "prepared": "2026-08-21",
+  "repository": "https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation",
+  "manuscript_title": "DEFT-Net: Depth-banded pre-decision routing of frozen heterogeneous experts for coronary X-ray angiography vessel-tree segmentation",
+  "protocol": {
+    "benchmark": "pooled released-image coronary XCA benchmark",
+    "source_counts": {
+      "ARCADE_SYNTAX": 1500,
+      "DCA_DCAE_supervised_pairs": 134,
+      "XCAD_supervised_pairs": 126
+    },
+    "released_images": 1760,
+    "split": {
+      "train": 1408,
+      "validation": 176,
+      "test": 176
+    },
+    "image_size": [512, 512],
+    "threshold": 0.5,
+    "test_time_augmentation": false,
+    "seeds": [0, 42, 44],
+    "phase1_epochs": 60,
+    "phase2_epochs": 60,
+    "objective": "0.50 BCE + 0.50 Dice"
+  },
+  "headline_result": {
+    "dice_mean": 0.8264,
+    "dice_seed_sd": 0.0056,
+    "iou_mean": 0.7042,
+    "iou_seed_sd": 0.0081,
+    "sensitivity_mean": 0.8490,
+    "sensitivity_seed_sd": 0.0036,
+    "precision_mean": 0.8186,
+    "precision_seed_sd": 0.0065,
+    "mcc_mean": 0.8237,
+    "mcc_seed_sd": 0.0055,
+    "cldice_mean": 0.9025,
+    "cldice_seed_sd": 0.0240,
+    "cbdice_mean": 0.8086,
+    "cbdice_seed_sd": 0.0010,
+    "hd95_mean_px": 42.46,
+    "hd95_seed_sd_px": 1.25,
+    "assd_mean_px": 7.21,
+    "assd_seed_sd_px": 0.58
+  },
+  "parameter_profiles": {
+    "manuscript_experimental_configuration": {
+      "phase2_trainable_millions": 4.48,
+      "total_inference_millions": 14.99,
+      "latency_no_tta_ms": 17.82,
+      "peak_vram_gb": 0.52
+    },
+    "bundled_lightweight_reference": {
+      "phase2_trainable": 1862074,
+      "total_inference": 12364598
+    }
+  },
+  "included_artifacts": [
+    "phase1_and_phase2_training_code",
+    "current_model_and_legacy_checkpoint_migration",
+    "fixed_threshold_evaluation_code",
+    "per_image_structure_metric_export",
+    "paired_statistical_analysis",
+    "current_aggregate_result_tables",
+    "final_manuscript_architecture_figure",
+    "reproducibility_documentation"
+  ],
+  "not_included": [
+    "raw_or_redistributed_dataset_images",
+    "trained_model_checkpoints_without_redistribution_clearance",
+    "source_identifiers_or_private_clinical_metadata",
+    "per_image_predictions_from_the_manuscript_runs"
+  ],
+  "claim_boundary": "Released-image, fixed-protocol evidence; not patient-, procedure-, site-, or clinical-external validation where the required identifiers are unavailable.",
+  "sha256": {
+    "configs/deftnet_cmig.yaml": "5da164d0877c82dfee274433191c95cc0bbeb633cf31a6bb600e82251a58035d",
+    "configs/dca_five_expert.yaml": "f7d46c2da4bce32c7be4e6524663cfba12b12dfaad380f27df33d84024d92ee1",
+    "assets/architecture.png": "00e516cf71e4c4bc98b27d860ab61aa29ee5787337fbae4b8f7f43d367c65dec",
+    "experiments/pooled_public_fixed_notta_seed_summary.csv": "bff0061fd058d07c25b3c227009e1ff07865baeeb058372a14c66735cff8b641",
+    "experiments/mechanism_controls_three_seed_summary.csv": "a0089ed835a919e47ec02016e8fe874978bff9e534f00c5684bada7f9b6f0528",
+    "experiments/full_data_controls_three_seed_summary.csv": "9f15aa026a5e6559824242f59b8c54a2f8713b1d549b0098f48a3c8470ca0303"
+  }
+}

@@ -1,11 +1,12 @@
-# Model card
+# DEFT-Net model card
 
 ## Model
 
 DEFT-Net is a two-stage binary semantic-segmentation architecture for coronary
 X-ray angiography vessel trees. It combines independently specialized frozen
 CNN and Transformer encoders through fixed depth-banded admission and
-pixel-wise HSAF routing before one shared U-Net decoder.
+pixel-wise HSAF routing into one shared U-Net decoder, which forms the vessel mask.
+The method is a pre-decision feature-routing design, not an output ensemble.
 
 ## Intended use
 
@@ -56,16 +57,23 @@ Three-seed mean +/- seed SD at threshold `0.5`, no TTA:
 HD95 and ASSD are boundary-distance guardrails and are not presented as
 universal wins. Full results and mechanism controls are in `experiments/`.
 
-## Efficiency
+## Parameter and efficiency accounting
 
-The current architecture has 1,862,074 trainable Phase-II parameters and
-12,364,598 total inference parameters. Frozen experts remain active at
-inference, so the trainable and total counts must be reported together. These
-values are measured directly from the v0.2.0 model graph.
+The manuscript experimental configuration reports `4.48 M` trainable Phase-II
+parameters, `14.99 M` parameters in the complete inference graph, `17.82 ms`
+no-TTA latency, and `0.52 GB` peak VRAM at batch size 1.
+
+The bundled lightweight reference configuration is regression-tested at
+`1,862,074` trainable Phase-II parameters and `12,364,598` total inference
+parameters. It implements the same two-stage mechanism and admission policy,
+but it is not the channel configuration used for the manuscript efficiency
+row. Frozen experts remain active at inference in both configurations, so
+trainable and total counts must always be reported together.
 
 ## Limitations
 
-- Raw third-party datasets and trained weights are not included.
+- Raw third-party datasets and trained weights are not included unless their
+  source terms permit redistribution.
 - Results are tied to the stated released-image protocol and evaluator.
 - The current evidence supports the tested constrained combination; it does not
   establish that any component is uniquely optimal for every dataset or metric.

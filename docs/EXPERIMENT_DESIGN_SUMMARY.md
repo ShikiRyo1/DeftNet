@@ -57,7 +57,8 @@ Three rows separate two alternative explanations:
 3. the heterogeneous fold-perspective DEFT-Net bank.
 
 The ordered aggregate profile is reported in
-`experiments/full_data_controls_v277.csv`. It supports the coupled design point
+`experiments/full_data_controls_three_seed_summary.csv`. It supports the
+coupled design point
 tested here: architecture heterogeneity helps, and the fold-perspective bank
 adds a second improvement when the roster and Phase-II mechanism are retained.
 It does not claim that fold diversity alone or `K=5` is globally optimal.
@@ -67,6 +68,11 @@ It does not claim that fold diversity alone or `K=5` is globally optimal.
 Frozen, unfrozen, and from-scratch variants test whether the Phase-I expert
 states are useful and whether preserving those states during Phase II matters.
 Trainable Phase-II and total inference parameters are reported separately.
+
+The manuscript efficiency experiment uses `4.48 M` trainable Phase-II
+parameters and a `14.99 M`-parameter complete inference graph. The bundled
+lightweight reference implementation has a smaller channel profile and must
+not be used to replace those manuscript values.
 
 ## 7. Statistical support
 

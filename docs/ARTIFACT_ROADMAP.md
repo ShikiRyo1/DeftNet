@@ -1,14 +1,14 @@
 # Artifact roadmap
 
-## Included in v0.2.0
+## Included in v0.3.0
 
 - importable DEFT-Net model package and canonical config;
 - Phase-I fold manifest and expert training entry points;
 - Phase-II HSAF/shared-decoder training with checkpoint validation;
 - fixed-threshold evaluation, per-image metrics, paired statistics, profiling,
   split-manifest, and qualitative-gallery utilities;
-- current benchmark, mechanism-control, and full-data-control aggregate CSVs;
-- accurate architecture image, model card, data scope, reproducibility protocol,
+- stable benchmark, mechanism-control, and full-data-control aggregate CSVs;
+- final-manuscript architecture image, model card, data scope, reproducibility protocol,
   release notes, citation metadata, and MIT license.
 
 ## Release-gated artifacts
@@ -18,7 +18,7 @@
 - per-image metric rows and paired-statistics JSON;
 - hardware-matched latency/VRAM profile;
 - clinical-image panels where redistribution terms permit;
-- final paper DOI or accepted-manuscript citation.
+- final paper DOI or accepted-manuscript citation when available.
 
 ## Regeneration commands
 

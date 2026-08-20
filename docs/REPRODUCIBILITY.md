@@ -1,6 +1,7 @@
 # Reproducibility protocol
 
-This document defines the public v0.2.0 reference protocol.
+This document defines the public v0.3.0 reference protocol aligned with the
+final manuscript mechanism and aggregate evidence.
 
 ## Fixed operating point
 
@@ -67,9 +68,20 @@ Each release checkpoint should be accompanied by:
 - epoch history and final fixed-threshold per-image metrics;
 - software and hardware profile.
 
+## Configuration boundary
+
+`configs/deftnet_cmig.yaml` is the executable lightweight mechanism reference
+used by CI and public smoke tests. It preserves the five-expert roster,
+complementary-view Phase-I training, depth-banded admission, HSAF routing, and
+shared decoder, but it is not the channel configuration behind the manuscript
+efficiency row. The manuscript experimental configuration reports `4.48 M`
+trainable Phase-II parameters and `14.99 M` total inference parameters; the
+bundled reference graph is regression-tested at `1,862,074` and `12,364,598`,
+respectively. Do not substitute one parameter profile for the other.
+
 ## Legacy compatibility
 
-v0.1.x configurations used expert identifiers `E5/E7/E9/E11/E12`. The v0.2.0
+v0.1.x configurations used expert identifiers `E5/E7/E9/E11/E12`. The current
 loader migrates the complete legacy roster and matching checkpoint keys to
 `E1/E2/E3/E4/E5`. New artifacts should use only the canonical identifiers.
 

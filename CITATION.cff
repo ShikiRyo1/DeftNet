@@ -1,11 +1,20 @@
 cff-version: 1.2.0
-message: "If you use DeftNet/DEFT-Net in your research, please cite this repository and the associated manuscript."
-title: "DEFT-Net: Depth-Banded Routing of Fold-Perspective Frozen Heterogeneous Experts"
-version: "0.2.0"
-date-released: "2026-07-11"
+message: "If you use DEFT-Net in your research, please cite this repository and the associated manuscript."
+title: "DEFT-Net: Depth-banded pre-decision routing of frozen heterogeneous experts for coronary X-ray angiography vessel-tree segmentation"
+version: "0.3.0"
 authors:
   - family-names: "Wu"
     given-names: "Yuhui"
+  - family-names: "Chen"
+    given-names: "Zhe"
+  - family-names: "Li"
+    given-names: "Kai"
+  - family-names: "Ewing"
+    given-names: "Rob M."
+  - family-names: "Belkhatir"
+    given-names: "Zehor"
+  - family-names: "Wang"
+    given-names: "Yihua"
 year: 2026
 repository-code: "https://github.com/ShikiRyo1/DeftNet_coronary-vessel-semantic-segmentation"
 license: MIT

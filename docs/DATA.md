@@ -18,12 +18,14 @@ resampling.
 
 ## Current benchmark scope
 
-The manuscript benchmark combines 1,760 released coronary angiography images
-from DCA/DCAE, XCAD, and ARCADE after conversion to a common single-channel
-image and binary vessel-foreground representation. The fixed released-image
-split is 1,408/176/176 (80%/10%/10%) for training, validation, and held-out
-testing. All model selection is confined to training and validation; the test
-split is evaluated at threshold `0.5` without test-time augmentation.
+The manuscript benchmark combines 1,760 released coronary angiography images:
+1,500 ARCADE SYNTAX images, 134 supervised DCA/DCAE image-mask pairs, and 126
+supervised XCAD image-mask pairs. Each source is converted to a common
+single-channel image and binary vessel-foreground representation. The fixed
+released-image split is 1,408/176/176 (80%/10%/10%) for training, validation,
+and held-out testing. All model selection is confined to training and
+validation; the test split is evaluated at threshold `0.5` without test-time
+augmentation.
 
 The five Phase-I perspective folds are created only inside the 1,408-image
 training split. Each expert omits a different internal fold and trains on the
@@ -31,9 +33,11 @@ other four. These folds do not replace the validation or held-out test split.
 
 Where public releases expose reliable sequence or group identifiers, users
 should construct group-disjoint partitions and record the grouping key in the
-split manifest. The aggregate package is described as released-image evidence;
-it is not presented as patient-, procedure-, site-, or external clinical
-validation where those identifiers are unavailable.
+split manifest. The main aggregate package is released-image evidence; it is
+not patient-, procedure-, site-, or external clinical validation where those
+identifiers are unavailable. A separate same-modality stress test uses its
+available patient and sequence identifiers and retains its narrower
+within-resource interpretation.
 
 ## Harmonization and provenance checks
 

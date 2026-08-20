@@ -35,10 +35,10 @@ The shared pattern is:
   `scripts/infer.py`: two-stage training and evaluation entry points.
 - `scripts/per_image_metrics.py`, `scripts/paired_stats.py`,
   `scripts/profile_model.py`: reproducibility utilities.
-- `experiments/pooled_public_fixed_notta_seed_summary_v277.csv`: current public
+- `experiments/pooled_public_fixed_notta_seed_summary.csv`: current public
   aggregate result table.
-- `experiments/mechanism_controls_v277.csv` and
-  `experiments/full_data_controls_v277.csv`: mechanism evidence.
+- `experiments/mechanism_controls_three_seed_summary.csv` and
+  `experiments/full_data_controls_three_seed_summary.csv`: mechanism evidence.
 - `experiments/fusion_hsaf_vs_mean.json`: mechanism-control summary.
 - `docs/`: data, model-card, reproducibility, artifact-roadmap, release notes,
   and experiment-design summaries.
@@ -55,5 +55,5 @@ Unlike a generic computer-vision demo repo, DEFT-Net deliberately withholds:
 - prediction masks if filenames or metadata could disclose private information;
 - manuscript DOCX/PDF drafts.
 
-This is why the public repository is currently a code and experiment-summary
-release rather than a full data-and-checkpoint artifact.
+This is why the public repository is a code and aggregate-evidence release
+rather than an unrestricted data-and-checkpoint artifact.
